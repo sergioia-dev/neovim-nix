@@ -8,8 +8,6 @@ vim.g.db_ui_win_position = "right"
 vim.g.db_ui_env_variable_url = "_URL"
 vim.g.db_ui_env_variable_name = "_NAME"
 vim.g.db_ui_dotenv_variable_prefix = "DATABASE"
-vim.g.db_ui_save_location = vim.fn.expand("~/.local/nvim/db_connections")
-
 -- Path to your shared connections file
 local connections_file = vim.fn.expand("~/.local/nvim/db_connections/connections.json")
 
