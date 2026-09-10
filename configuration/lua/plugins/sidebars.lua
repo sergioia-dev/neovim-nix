@@ -32,6 +32,10 @@ local DADBOD_CLIENTS = {
 local grip_client_available = nil
 local dadbod_client_available = nil
 
+-- Track which sidebar is currently open (mutually exclusive)
+local datagrip_open = false
+local dadbod_open = false
+
 local function check_grip_clients()
 	if grip_client_available ~= nil then
 		return grip_client_available
@@ -85,9 +89,22 @@ function M.toggle_explorer()
 end
 
 -- Called by <F1>. Toggles dadbod-grip only if database clients are available.
+-- Closes dadbod if it is open, so only one database sidebar is visible at a time.
 function M.toggle_datagrip()
 	if is_nvim_tree_open() then
 		vim.cmd("NvimTreeClose")
+	end
+
+	-- If dadbod is open, close it first so only datagrip remains
+	if dadbod_open then
+		vim.cmd("DBUIToggle")
+		dadbod_open = false
+	end
+
+	if datagrip_open then
+		vim.cmd("GripToggle")
+		datagrip_open = false
+		return
 	end
 
 	if not check_grip_clients() then
@@ -96,12 +113,26 @@ function M.toggle_datagrip()
 	end
 
 	vim.cmd("GripToggle")
+	datagrip_open = true
 end
 
 -- Called by <F2>. Toggles vim-dadbod UI only if database clients are available.
+-- Closes datagrip if it is open, so only one database sidebar is visible at a time.
 function M.toggle_dadbod()
 	if is_nvim_tree_open() then
 		vim.cmd("NvimTreeClose")
+	end
+
+	-- If datagrip is open, close it first so only dadbod remains
+	if datagrip_open then
+		vim.cmd("GripToggle")
+		datagrip_open = false
+	end
+
+	if dadbod_open then
+		vim.cmd("DBUIToggle")
+		dadbod_open = false
+		return
 	end
 
 	if not check_dadbod_clients() then
@@ -110,6 +141,7 @@ function M.toggle_dadbod()
 	end
 
 	vim.cmd("DBUIToggle")
+	dadbod_open = true
 end
 
 return M
