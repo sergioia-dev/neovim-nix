@@ -15,11 +15,10 @@
     let
       lib = nixpkgs.lib;
 
-      piNvimOverlay = final: prev: {
+      pluginDerivationsOverlay = final: prev: {
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           dadbod-grip-nvim = final.callPackage ./derivations/dadbod-grip-nvim { };
-          nvim-schema-surfer = final.callPackage ./derivations/nvim-schema-surfer { };
         };
       };
 
@@ -36,8 +35,8 @@
       packages = forAllSystems (
         system:
         let
-          pkgs = nixpkgs.legacyPackages.${system}.extend piNvimOverlay;
-          pkgs-unstable = nixpkgs-unstable.legacyPackages.${system}.extend piNvimOverlay;
+          pkgs = nixpkgs.legacyPackages.${system}.extend pluginDerivationsOverlay;
+          pkgs-unstable = nixpkgs-unstable.legacyPackages.${system}.extend pluginDerivationsOverlay;
         in
         let
           LSPs = with pkgs; [

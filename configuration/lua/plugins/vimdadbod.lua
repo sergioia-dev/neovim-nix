@@ -29,9 +29,3 @@ if file then
 else
 	vim.notify("Connections file not found: " .. connections_file, vim.log.levels.WARN)
 end
-
--- require("schema-surfer").setup({
---   db_uri_env = "DATABASE_URL",
---   auto_build = false, -- Skip auto-build to avoid cargo network dependency
--- })
---
