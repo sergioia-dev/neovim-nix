@@ -16,7 +16,10 @@ local DEFAULTS = {
 -- Depth cycle order (0 means unlimited: omit -L entirely).
 local DEPTH_CYCLE = { 0, 1, 2, 3, 5 }
 
-local state = vim.deepcopy(DEFAULTS)
+local state = {}
+for k, v in pairs(DEFAULTS) do
+	state[k] = v
+end
 
 -- Merge user-provided options into state.
 function M.setup(opts)

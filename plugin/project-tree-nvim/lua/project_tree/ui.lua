@@ -2,13 +2,11 @@ local M = {}
 
 local config = require("project_tree.config")
 
--- Window state stored in module table for access from init.lua
 M.window_id = nil
 M.buffer_id = nil
 
--- Find the nearest project root by looking for common project markers.
 local function find_project_root()
-	local current_dir = vim.uv.cwd()
+	local current_dir = vim.uv.cwd() or vim.fn.getcwd()
 	if not current_dir or current_dir == "" then
 		return vim.uv.cwd() or vim.fn.getcwd()
 	end
@@ -30,14 +28,10 @@ local function find_project_root()
 	return vim.uv.cwd() or vim.fn.getcwd()
 end
 
--- Build the complete tree command from the current option state.
 local function build_tree_command()
 	local state = config.get()
-	local args = { "tree" }
+	local args = { "tree", "-C", "--gitignore" }
 
-	if state.gitignore then
-		table.insert(args, "--gitignore")
-	end
 	if state.hidden then
 		table.insert(args, "-a")
 	end
@@ -62,71 +56,24 @@ local function build_tree_command()
 	end
 
 	table.insert(args, find_project_root())
-	return args
+	return table.concat(args, " ") .. " | less -R"
 end
 
--- Create a compact legend showing every option and its current state.
 local function build_legend()
 	local state = config.get()
-	local lines = { "[ Project Tree ]" }
-	table.insert(lines, "g:" .. (state.gitignore and "ON" or "OFF"))
-	table.insert(lines, "a:" .. (state.hidden and "ON" or "OFF"))
-	table.insert(lines, "d:" .. (state.dirs_only and "ON" or "OFF"))
-	table.insert(lines, "s:" .. (state.human_size and "ON" or "OFF"))
-	table.insert(lines, "r:" .. (state.dirsfirst and "ON" or "OFF"))
-	table.insert(lines, "p:" .. (state.permissions and "ON" or "OFF"))
-	table.insert(lines, "L:" .. (state.depth > 0 and tostring(state.depth) or "all"))
-	table.insert(lines, "P:" .. (state.prune and "ON" or "OFF"))
-	table.insert(lines, "| q/Esc=close R=refresh")
-	return table.concat(lines, " ")
+	return string.format(
+		"[Project Tree] g:%s a:%s d:%s s:%s r:%s p:%s L:%s P:%s | q/Esc=close R=refresh",
+		state.gitignore and "ON" or "OFF",
+		state.hidden and "ON" or "OFF",
+		state.dirs_only and "ON" or "OFF",
+		state.human_size and "ON" or "OFF",
+		state.dirsfirst and "ON" or "OFF",
+		state.permissions and "ON" or "OFF",
+		state.depth > 0 and tostring(state.depth) or "all",
+		state.prune and "ON" or "OFF"
+	 )
 end
 
--- Split tree output into buffer lines.
-local function split_lines(output)
-	if output == nil or output == "" then
-		return { "" }
-	end
-
-	local lines = {}
-	for line in output:gmatch("([^\n]*)\n?") do
-		table.insert(lines, line)
-	end
-	if #lines == 0 then
-		table.insert(lines, "")
-	end
-	return lines
-end
-
--- Run tree and collect its stdout/stderr.
-local function run_tree()
-	local command = build_tree_command()
-	vim.system(command, { text = true }, function(output)
-		vim.schedule(function()
-			if M.window_id == nil or not vim.api.nvim_win_is_valid(M.window_id) then
-				return
-			end
-
-			local content = output.stdout or ""
-			local exit_code = output.code
-
-			if exit_code ~= 0 then
-				content = "tree exited with code " .. tostring(exit_code) .. "\n\n" .. (output.stderr or "")
-			end
-
-			local lines = split_lines(content)
-			table.insert(lines, 1, build_legend())
-			table.insert(lines, 2, "")
-
-			vim.api.nvim_buf_set_lines(M.buffer_id, 0, -1, false, lines)
-			vim.api.nvim_set_option_value("buftype", "nofile", { buf = M.buffer_id })
-			vim.api.nvim_set_option_value("bufhidden", "wipe", { buf = M.buffer_id })
-			vim.api.nvim_set_option_value("swapfile", false, { buf = M.buffer_id })
-			vim.api.nvim_set_option_value("modifiable", false, { buf = M.buffer_id })
-		end)
-	end)
-end
-
--- Set up all keymaps local to the floating window buffer.
 local function set_window_keymaps()
 	local function map(mode, lhs, rhs, opts)
 		local options = opts or {}
@@ -134,12 +81,8 @@ local function set_window_keymaps()
 		vim.keymap.set(mode, lhs, rhs, options)
 	end
 
-	map("n", "q", function()
-		M.close()
-	end, { desc = "Close project tree", silent = true })
-	map("n", "<Esc>", function()
-		M.close()
-	end, { desc = "Close project tree", silent = true })
+	map("n", "q", function() M.close() end, { desc = "Close project tree", silent = true })
+	map("n", "<Esc>", function() M.close() end, { desc = "Close project tree", silent = true })
 	map("n", "g", function()
 		config.set("gitignore", not config.get().gitignore)
 		M.refresh()
@@ -172,9 +115,7 @@ local function set_window_keymaps()
 		config.set("prune", not config.get().prune)
 		M.refresh()
 	end, { desc = "Toggle prune", silent = true })
-	map("n", "R", function()
-		M.refresh()
-	end, { desc = "Refresh project tree", silent = true })
+	map("n", "R", function() M.refresh() end, { desc = "Refresh project tree", silent = true })
 	map("n", "<C-f>", function()
 		vim.api.nvim_win_set_cursor(M.window_id, vim.api.nvim_win_get_cursor(M.window_id) + 1)
 	end, { desc = "Scroll down", silent = true })
@@ -183,15 +124,15 @@ local function set_window_keymaps()
 	end, { desc = "Scroll up", silent = true })
 end
 
--- Open the floating window and prepare its buffer.
 function M.open()
 	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
 		vim.api.nvim_set_current_win(M.window_id)
 		return
 	end
 
-	M.buffer_id = vim.api.nvim_create_buf(false, true)
-	vim.api.nvim_buf_set_lines(M.buffer_id, 0, -1, false, { build_legend(), "" })
+	M.buffer_id = vim.api.nvim_create_buf(false, false)
+
+	vim.api.nvim_buf_set_name(M.buffer_id, "ProjectTree")
 
 	local width = math.floor(vim.o.columns * 0.85)
 	local height = math.floor(vim.o.lines * 0.80)
@@ -215,22 +156,20 @@ function M.open()
 	vim.api.nvim_win_set_option(M.window_id, "foldenable", false)
 
 	set_window_keymaps()
+
+	vim.fn.termopen(build_tree_command(), { cwd = find_project_root() })
 end
 
--- Run tree and update the existing floating window.
 function M.refresh()
 	if M.window_id == nil or not vim.api.nvim_win_is_valid(M.window_id) then
-		vim.notify("Project tree is not open", vim.log.levels.WARN)
+		vim.notify("Project tree terminal is not open", vim.log.levels.WARN)
 		return
 	end
 
-	vim.api.nvim_set_current_win(M.window_id)
-	vim.api.nvim_set_option_value("modifiable", true, { buf = M.buffer_id })
-	vim.api.nvim_buf_set_lines(M.buffer_id, 0, -1, false, { build_legend(), "" })
-	run_tree()
+	M.close()
+	M.open()
 end
 
--- Close the floating window and release its resources.
 function M.close()
 	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
 		vim.api.nvim_win_close(M.window_id, true)
@@ -240,27 +179,10 @@ function M.close()
 	M.buffer_id = nil
 end
 
--- Toggle a single option and refresh the window.
-function M.toggle_flag(key)
-	if config.get()[key] == nil then
-		return
-	end
-
-	local new_value = not config.get()[key]
-	config.set(key, new_value)
-
-	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
-		M.refresh()
-	end
-end
-
--- Cycle the depth level and refresh the window.
-function M.cycle_depth()
-	config.cycle_depth()
-
-	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
-		M.refresh()
-	end
-end
+M.open = M.open
+M.close = M.close
+M.refresh = M.refresh
+M.toggle_flag = M.toggle_flag
+M.cycle_depth = M.cycle_depth
 
 return M
