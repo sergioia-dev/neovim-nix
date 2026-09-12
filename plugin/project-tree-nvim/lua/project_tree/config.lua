@@ -11,6 +11,8 @@ local DEFAULTS = {
 	permissions = false,
 	depth = 3,
 	prune = false,
+	pattern = "",
+	du = false,
 }
 
 -- Depth cycle order (0 means unlimited: omit -L entirely).

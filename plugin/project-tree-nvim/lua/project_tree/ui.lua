@@ -54,24 +54,39 @@ local function build_tree_command()
 	if state.prune then
 		table.insert(args, "--prune")
 	end
+	if state.pattern ~= "" then
+		table.insert(args, "-P")
+		table.insert(args, state.pattern)
+	end
+	if state.du then
+		table.insert(args, "--du")
+	end
 
 	table.insert(args, find_project_root())
-	return table.concat(args, " ") .. " | less -R"
+	return args
 end
 
 local function build_legend()
 	local state = config.get()
+
+	local function opt(key, desc)
+		local status = state[key] and "✓" or "○"
+		return status .. desc
+	end
+
 	return string.format(
-		"[Project Tree] g:%s a:%s d:%s s:%s r:%s p:%s L:%s P:%s | q/Esc=close R=refresh",
-		state.gitignore and "ON" or "OFF",
-		state.hidden and "ON" or "OFF",
-		state.dirs_only and "ON" or "OFF",
-		state.human_size and "ON" or "OFF",
-		state.dirsfirst and "ON" or "OFF",
-		state.permissions and "ON" or "OFF",
+		"[Project Tree] g:%s a:%s d:%s s:%s r:%s p:%s L:%s P:%s u:%s f:%s | q/Esc=close",
+		opt("gitignore", " gitignore"),
+		opt("hidden", " hidden"),
+		opt("dirs_only", " dirs"),
+		opt("human_size", " human"),
+		opt("dirsfirst", " dirsfirst"),
+		opt("permissions", " perms"),
 		state.depth > 0 and tostring(state.depth) or "all",
-		state.prune and "ON" or "OFF"
-	 )
+		opt("prune", " prune"),
+		opt("du", " du"),
+		opt("pattern", " filter")
+	)
 end
 
 local function set_window_keymaps()
@@ -115,25 +130,30 @@ local function set_window_keymaps()
 		config.set("prune", not config.get().prune)
 		M.refresh()
 	end, { desc = "Toggle prune", silent = true })
+	map("n", "u", function()
+		config.set("du", not config.get().du)
+		M.refresh()
+	end, { desc = "Toggle cumulative sizes", silent = true })
+	map("n", "f", function()
+		vim.ui.input({ prompt = "Pattern: " }, function(input)
+			if input ~= nil then
+				config.set("pattern", input)
+				M.refresh()
+			end
+		end)
+	end, { desc = "Set file pattern", silent = true })
 	map("n", "R", function() M.refresh() end, { desc = "Refresh project tree", silent = true })
 	map("n", "<C-f>", function()
-		vim.api.nvim_win_set_cursor(M.window_id, vim.api.nvim_win_get_cursor(M.window_id) + 1)
+		vim.api.nvim_set_current_win(M.window_id)
+		vim.cmd("normal! <C-f>")
 	end, { desc = "Scroll down", silent = true })
 	map("n", "<C-b>", function()
-		vim.api.nvim_win_set_cursor(M.window_id, vim.api.nvim_win_get_cursor(M.window_id) - 1)
+		vim.api.nvim_set_current_win(M.window_id)
+		vim.cmd("normal! <C-b>")
 	end, { desc = "Scroll up", silent = true })
 end
 
-function M.open()
-	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
-		vim.api.nvim_set_current_win(M.window_id)
-		return
-	end
-
-	M.buffer_id = vim.api.nvim_create_buf(false, false)
-
-	vim.api.nvim_buf_set_name(M.buffer_id, "ProjectTree")
-
+local function open_window()
 	local width = math.floor(vim.o.columns * 0.85)
 	local height = math.floor(vim.o.lines * 0.80)
 	local row = math.floor((vim.o.lines - height) / 2)
@@ -147,6 +167,8 @@ function M.open()
 		col = col,
 		style = "minimal",
 		border = "rounded",
+		title = build_legend(),
+		title_pos = "left",
 	})
 
 	vim.api.nvim_win_set_option(M.window_id, "wrap", false)
@@ -156,8 +178,23 @@ function M.open()
 	vim.api.nvim_win_set_option(M.window_id, "foldenable", false)
 
 	set_window_keymaps()
+end
 
+local function run_terminal()
 	vim.fn.termopen(build_tree_command(), { cwd = find_project_root() })
+end
+
+function M.open()
+	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
+		vim.api.nvim_set_current_win(M.window_id)
+		return
+	end
+
+	M.buffer_id = vim.api.nvim_create_buf(false, false)
+	vim.api.nvim_buf_set_name(M.buffer_id, "ProjectTree")
+
+	open_window()
+	run_terminal()
 end
 
 function M.refresh()
@@ -166,13 +203,23 @@ function M.refresh()
 		return
 	end
 
-	M.close()
+	vim.api.nvim_win_close(M.window_id, true)
+	M.window_id = nil
+
+	if M.buffer_id ~= nil and vim.api.nvim_buf_is_valid(M.buffer_id) then
+		vim.api.nvim_buf_delete(M.buffer_id, { force = true })
+	end
+
 	M.open()
 end
 
 function M.close()
 	if M.window_id ~= nil and vim.api.nvim_win_is_valid(M.window_id) then
 		vim.api.nvim_win_close(M.window_id, true)
+	end
+
+	if M.buffer_id ~= nil and vim.api.nvim_buf_is_valid(M.buffer_id) then
+		vim.api.nvim_buf_delete(M.buffer_id, { force = true })
 	end
 
 	M.window_id = nil
