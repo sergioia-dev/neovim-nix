@@ -41,7 +41,6 @@ let
     vimPlugins.vim-dadbod-ui
     vimPlugins.vim-dadbod-completion
     vimPlugins.vim-dadbod
-    vimPlugins.nvim-schema-surfer
     vimPlugins.dressing-nvim
     vimPlugins.todo-comments-nvim
     vimPlugins.nvim-treesitter.withAllGrammars
@@ -56,6 +55,7 @@ let
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
     vimPlugins.pi-nvim
+    vimPlugins.project-tree-nvim
     configuration
   ];
 

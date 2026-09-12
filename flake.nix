@@ -19,6 +19,7 @@
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           dadbod-grip-nvim = final.callPackage ./derivations/dadbod-grip-nvim { };
+          project-tree-nvim = final.callPackage ./derivations/project-tree-nvim { };
         };
       };
 
@@ -85,6 +86,7 @@
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
             cargo
+            tree
           ];
 
           pluginDependencies-minimal = with pkgs; [

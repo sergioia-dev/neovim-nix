@@ -3,12 +3,14 @@ vim.g.maplocalleader = " "
 
 local keymap = vim.keymap.set
 
+keymap("n", "<leader>ft", ":ProjectTree<CR>", { desc = "Toggle Project Tree", silent = true })
+
 -- Navigation
 keymap("n", "<leader>fm", require("plugins.sidebars").toggle_explorer, { desc = "Open Explorer / DBUI", silent = true })
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
-keymap("n", "<leader>ft", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
+keymap("n", "<leader>tt", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
 
 keymap("n", "<leader>fa", ":Telescope live_grep theme=dropdown<CR>", { desc = "Live grep", silent = true })
 keymap(

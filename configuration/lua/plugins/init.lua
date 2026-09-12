@@ -18,7 +18,7 @@ function M.setup()
 	require("plugins.vimdadbod")
 	require("plugins.dadbod-grip")
 	require("plugins.pi")
-	require("plugins.cmp")
+	require("plugins.project-tree")
 end
 
 M.setup()
