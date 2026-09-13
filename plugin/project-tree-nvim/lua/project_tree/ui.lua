@@ -29,9 +29,12 @@ local function find_project_root()
 end
 
 local function build_tree_command()
-	local state = config.get()
-	local args = { "tree", "-C", "--gitignore" }
+local state = config.get()
+local args = { "tree", "-C", "--dirsfirst" }
 
+	if state.gitignore then
+		table.insert(args, "--gitignore")
+	end
 	if state.hidden then
 		table.insert(args, "-a")
 	end
@@ -41,9 +44,7 @@ local function build_tree_command()
 	if state.human_size then
 		table.insert(args, "-h")
 	end
-	if state.dirsfirst then
-		table.insert(args, "--dirsfirst")
-	end
+
 	if state.permissions then
 		table.insert(args, "-p")
 	end
@@ -75,12 +76,11 @@ local function build_legend()
 	end
 
 	return string.format(
-		"[Project Tree] g:%s a:%s d:%s s:%s r:%s p:%s L:%s P:%s u:%s f:%s | q/Esc=close",
+"[Project Tree] g:%s a:%s d:%s s:%s p:%s L:%s P:%s u:%s f:%s",
 		opt("gitignore", " gitignore"),
 		opt("hidden", " hidden"),
 		opt("dirs_only", " dirs"),
 		opt("human_size", " human"),
-		opt("dirsfirst", " dirsfirst"),
 		opt("permissions", " perms"),
 		state.depth > 0 and tostring(state.depth) or "all",
 		opt("prune", " prune"),
@@ -114,10 +114,7 @@ local function set_window_keymaps()
 		config.set("human_size", not config.get().human_size)
 		M.refresh()
 	end, { desc = "Toggle human-readable sizes", silent = true })
-	map("n", "r", function()
-		config.set("dirsfirst", not config.get().dirsfirst)
-		M.refresh()
-	end, { desc = "Toggle directories first", silent = true })
+
 	map("n", "p", function()
 		config.set("permissions", not config.get().permissions)
 		M.refresh()
@@ -168,7 +165,7 @@ local function open_window()
 		style = "minimal",
 		border = "rounded",
 		title = build_legend(),
-		title_pos = "left",
+		title_pos = "center",
 	})
 
 	vim.api.nvim_win_set_option(M.window_id, "wrap", false)
