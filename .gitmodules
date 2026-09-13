@@ -1,0 +1,3 @@
+[submodule "plugins/project-tree"]
+	path = plugins/project-tree
+	url = git@github.com:sergioia-dev/project-tree-nvim.git
