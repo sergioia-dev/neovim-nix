@@ -19,6 +19,14 @@ local config = {
 	severity_sort = true,
 }
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "netrw",
+	callback = function()
+		-- Disable F1 inside netrw
+		vim.keymap.set("n", "<F1>", "<Nop>", { remap = false, buffer = true })
+	end,
+})
+
 vim.diagnostic.config(config)
 
 -- Enable autoread

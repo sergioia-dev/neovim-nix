@@ -16,7 +16,7 @@ function M.setup()
 	require("plugins.nvim-tree")
 	require("plugins.todo-comments")
 	require("plugins.vimdadbod")
-	require("plugins.dadbod-grip")
+	-- require("plugins.dadbod-grip")
 	require("plugins.pi")
 	require("plugins.project-tree")
 end

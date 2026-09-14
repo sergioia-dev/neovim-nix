@@ -62,7 +62,6 @@ vim.api.nvim_create_autocmd("FileType", {
 		cmp.setup.buffer({
 			sources = {
 				{ name = "vim-dadbod-completion" },
-				{ name = "dadbod_grip" },
 				{ name = "luasnip" },
 				{ name = "nvim_lsp" },
 				{ name = "path" },

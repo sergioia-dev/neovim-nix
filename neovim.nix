@@ -37,7 +37,7 @@ let
     vimPlugins.catppuccin-nvim
     vimPlugins.conform-nvim
     vimPlugins.nvim-lint
-    vimPlugins.dadbod-grip-nvim
+    # vimPlugins.dadbod-grip-nvim
     vimPlugins.vim-dadbod-ui
     vimPlugins.vim-dadbod-completion
     vimPlugins.vim-dadbod
@@ -50,7 +50,6 @@ let
     vimPlugins.smear-cursor-nvim
     vimPlugins.lazygit-nvim
     vimPlugins.lazydocker-nvim
-    vimPlugins.nvim-tree-lua
     vimPlugins.kulala-nvim
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim

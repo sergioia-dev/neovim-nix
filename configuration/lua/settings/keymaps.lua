@@ -6,7 +6,7 @@ local keymap = vim.keymap.set
 keymap("n", "<leader>ft", ":ProjectTree<CR>", { desc = "Toggle Project Tree", silent = true })
 
 -- Navigation
-keymap("n", "<leader>fm", require("plugins.sidebars").toggle_explorer, { desc = "Open Explorer / DBUI", silent = true })
+keymap("n", "<leader>fm", require("plugins.sidebars").lexplore, { desc = "Open Explorer / DBUI", silent = true })
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
@@ -78,21 +78,24 @@ keymap("n", "<leader>gb", "<cmd>:Git blame<CR>", { desc = "Open Git Blames", sil
 local container_engine = vim.fn.executable("podman") == 1 and "podman" or "docker"
 keymap(
 	"n",
-	"<F3>",
+	"<F2>",
 	"<cmd>:lua LazyDocker.toggle({engine = '" .. container_engine .. "'})<CR>",
 	{ desc = "Toggle LazyDocker (" .. container_engine .. ")", silent = true }
 )
 
 -- Pi agent
-keymap("n", "<leader>pf", ":PiSendFile<CR>")
+keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
 keymap("v", "<leader>ps", ":PiSendSelection<CR>")
-keymap("n", "<leader>ps", ":PiSessions<CR>")
-keymap("n", "<leader>pb", ":PiSendBuffer<CR>")
-keymap("n", "<leader>pi", ":PiPing<CR>")
+keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
 
 -- Database
-keymap("n", "<F1>", require("plugins.sidebars").toggle_datagrip, { desc = "Toggle Data Grip Sidebar", silent = true })
+-- keymap(
+-- 	{ "n", "v" },
+-- 	"<F1>",
+-- 	require("plugins.sidebars").toggle_datagrip,
+-- 	{ desc = "Toggle Data Grip Sidebar", silent = true }
+-- )
 
-keymap("n", "<F2>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
+keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
-keymap("n", "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
+keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
