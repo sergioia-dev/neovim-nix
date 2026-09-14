@@ -46,8 +46,15 @@ local function notify_no_client(clients)
 	)
 end
 
-local function is_explorer_open()
-	return vim.bo.filetype == "netrw"
+-- Return the window ID if the netrw explorer is visible in any window.
+local function get_explorer_window()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.bo[buf].filetype == "netrw" then
+			return win
+		end
+	end
+	return nil
 end
 
 -- Called by <leader>fm. Closes DadBod first, then toggles the default file explorer using :Lexplore!.
@@ -58,18 +65,20 @@ function M.lexplore()
 		dadbod_open = false
 	end
 
-	if is_explorer_open() then
-		vim.cmd("close")
+	local explorer_win = get_explorer_window()
+	if explorer_win then
+		vim.api.nvim_win_close(explorer_win, true)
 	else
 		vim.cmd("Lexplore!")
 	end
 end
 
--- Called by <F2>. Toggles vim-dadbod UI only if database clients are available.
--- Closes the explorer if it is open, so only one database sidebar is visible at a time.
+-- Called by <F1>. Toggles vim-dadbod UI only if database clients are available.
+-- Closes the explorer if it is open in any window, so only one database sidebar is visible at a time.
 function M.toggle_dadbod()
-	if is_explorer_open() then
-		vim.cmd("close")
+	local explorer_win = get_explorer_window()
+	if explorer_win then
+		vim.api.nvim_win_close(explorer_win, true)
 	end
 
 	if dadbod_open then
