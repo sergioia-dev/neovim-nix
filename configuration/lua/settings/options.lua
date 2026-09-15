@@ -37,6 +37,8 @@ vim.api.nvim_create_autocmd("TermOpen", {
 	end,
 })
 
+-- Terminal toggle is now configured in configuration/lua/plugins/terminal.lua
+
 vim.diagnostic.config(config)
 
 -- Enable autoread

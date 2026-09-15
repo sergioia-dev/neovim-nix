@@ -6,7 +6,12 @@ local keymap = vim.keymap.set
 keymap("n", "<leader>ft", ":ProjectTree<CR>", { desc = "Toggle Project Tree", silent = true })
 
 -- Navigation
-keymap("n", "<leader>fm", require("plugins.sidebars").lexplore, { desc = "Open Explorer / DBUI", silent = true })
+keymap(
+	{ "n", "t", "v" },
+	"<leader>fm",
+	require("plugins.sidebars").lexplore,
+	{ desc = "Open Explorer / DBUI", silent = true }
+)
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
@@ -82,7 +87,7 @@ keymap("n", "<leader>gb", "<cmd>:Git blame<CR>", { desc = "Open Git Blames", sil
 local container_engine = vim.fn.executable("podman") == 1 and "podman" or "docker"
 keymap(
 	"n",
-	"<F2>",
+	"<F3>",
 	"<cmd>:lua LazyDocker.toggle({engine = '" .. container_engine .. "'})<CR>",
 	{ desc = "Toggle LazyDocker (" .. container_engine .. ")", silent = true }
 )
@@ -91,7 +96,26 @@ keymap(
 keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
 keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
 
-keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
+keymap(
+	{ "n", "t", "v" },
+	"<F1>",
+	require("plugins.sidebars").toggle_dadbod,
+	{ desc = "Toggle DadBod UI", silent = true }
+)
+
+keymap(
+	{ "n", "t", "v" },
+	"<leader>tv",
+	require("plugins.terminal").toggle_right_terminal,
+	{ desc = "Toggle Right Terminal", silent = true }
+)
+
+keymap(
+	{ "n", "t" },
+	"<leader>th",
+	require("plugins.horizontal_terminal").toggle_bottom_terminal,
+	{ desc = "Toggle Bottom Terminal", silent = true }
+)
 
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
 

@@ -19,8 +19,9 @@ function M.setup()
 	require("plugins.persisted")
 	require("plugins.pi")
 	require("plugins.project-tree")
+	require("plugins.terminal")
+	require("plugins.horizontal_terminal")
 end
 
 M.setup()
-
 return M

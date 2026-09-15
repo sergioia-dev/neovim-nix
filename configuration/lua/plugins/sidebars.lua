@@ -57,8 +57,43 @@ local function get_explorer_window()
 	return nil
 end
 
+-- Switch to a non-terminal window so a sidebar splits relative to a
+-- real file buffer instead of opening over a terminal buffer.
+-- Returns true if a non-terminal window was focused, false otherwise.
+local function focus_non_terminal_window()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.bo[buf].buftype ~= "terminal" then
+			vim.api.nvim_set_current_win(win)
+			return true
+		end
+	end
+	return false
+end
+
+-- Close any other sidebar (DBUI, netrw, or terminal) so only one sidebar is visible at a time.
+-- Safe to call from other modules; does nothing if no other sidebar is open.
+function M.close_other_sidebars()
+	focus_non_terminal_window()
+
+	if dadbod_open then
+		vim.cmd("DBUIToggle")
+		dadbod_open = false
+	end
+
+	local explorer_win = get_explorer_window()
+	if explorer_win then
+		vim.api.nvim_win_close(explorer_win, true)
+	end
+
+	-- Close the terminal too, so only one sidebar is visible at a time
+	require("plugins.terminal").close_terminal()
+end
+
 -- Called by <leader>fm. Closes DadBod first, then toggles the default file explorer using :Lexplore!.
 function M.lexplore()
+	focus_non_terminal_window()
+	require("plugins.terminal").close_terminal()
 	-- Close DB sidebar first so only the explorer remains
 	if dadbod_open then
 		vim.cmd("DBUIToggle")
@@ -76,6 +111,8 @@ end
 -- Called by <F1>. Toggles vim-dadbod UI only if database clients are available.
 -- Closes the explorer if it is open in any window, so only one database sidebar is visible at a time.
 function M.toggle_dadbod()
+	focus_non_terminal_window()
+	require("plugins.terminal").close_terminal()
 	local explorer_win = get_explorer_window()
 	if explorer_win then
 		vim.api.nvim_win_close(explorer_win, true)
