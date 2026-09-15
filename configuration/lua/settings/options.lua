@@ -6,7 +6,8 @@ vim.opt.shiftwidth = 2
 vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 999
 vim.opt.expandtab = true
-vim.cmd("set clipboard+=unnamedplus")
+vim.opt.clipboard = "unnamed"
+
 vim.cmd("colorscheme catppuccin-mocha")
 vim.defer_fn(function()
 	vim.cmd("colorscheme catppuccin-mocha")
@@ -24,6 +25,15 @@ vim.api.nvim_create_autocmd("FileType", {
 	callback = function()
 		-- Disable F1 inside netrw
 		vim.keymap.set("n", "<F1>", "<Nop>", { remap = false, buffer = true })
+	end,
+})
+
+-- Automatically enter Insert mode when a terminal opens
+vim.api.nvim_create_autocmd("TermOpen", {
+	group = vim.api.nvim_create_augroup("TerminalSettings", { clear = true }),
+	pattern = "*",
+	callback = function()
+		vim.cmd("startinsert")
 	end,
 })
 

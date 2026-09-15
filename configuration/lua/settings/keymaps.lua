@@ -10,16 +10,20 @@ keymap("n", "<leader>fm", require("plugins.sidebars").lexplore, { desc = "Open E
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
-keymap("n", "<leader>tt", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
+keymap("n", "<leader>fc", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
+
+keymap("n", "<leader>fs", ":Telescope persisted theme=dropdown<CR>", { desc = "Find saved sessions", silent = true })
 
 keymap("n", "<leader>fa", ":Telescope live_grep theme=dropdown<CR>", { desc = "Live grep", silent = true })
+
+keymap({ "n", "v" }, "<Tab>", ":Telescope buffers theme=ivy<CR>", { desc = "Live grep", silent = true })
+
 keymap(
 	"n",
 	"<leader>fi",
 	"<cmd>:lua require'telescope.builtin'.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({}))<CR>",
 	{ desc = "Live grep in Current file", silent = true }
 )
-keymap("n", "<leader>fh", ":Telescope help_tags<CR>", { desc = "Fuzzy search Documentation", silent = true })
 
 -- LSP
 keymap(
@@ -85,17 +89,24 @@ keymap(
 
 -- Pi agent
 keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
-keymap("v", "<leader>ps", ":PiSendSelection<CR>")
 keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
-
--- Database
--- keymap(
--- 	{ "n", "v" },
--- 	"<F1>",
--- 	require("plugins.sidebars").toggle_datagrip,
--- 	{ desc = "Toggle Data Grip Sidebar", silent = true }
--- )
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
+
+keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+
+keymap({ "n", "v" }, "<C-w>s", "<Cmd>Persisted save<CR>", { desc = "Save session" })
+
+keymap({ "v", "n", "t" }, "<C-w>%", "<Cmd>rightbelow vsplit | term<CR>", { desc = "Open terminal in vertical split" })
+
+keymap({ "v", "n", "t" }, '<C-w>"', "<Cmd>rightbelow split | term<CR>", { desc = "Open terminal in horizontal split" })
+
+keymap({ "v", "n", "t" }, "<C-w><Left>", "<Cmd>vertical resize -5<CR>", { desc = "Shrink window width" })
+
+keymap({ "v", "n", "t" }, "<C-w><Right>", "<Cmd>vertical resize +5<CR>", { desc = "Grow window width" })
+
+keymap({ "v", "n", "t" }, "<C-w><Up>", "<Cmd>horizontal resize +5<CR>", { desc = "Grow window height" })
+
+keymap({ "v", "n", "t" }, "<C-w><Down>", "<Cmd>horizontal resize -5<CR>", { desc = "Shrink window height" })

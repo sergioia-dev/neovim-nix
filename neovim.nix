@@ -37,7 +37,6 @@ let
     vimPlugins.catppuccin-nvim
     vimPlugins.conform-nvim
     vimPlugins.nvim-lint
-    # vimPlugins.dadbod-grip-nvim
     vimPlugins.vim-dadbod-ui
     vimPlugins.vim-dadbod-completion
     vimPlugins.vim-dadbod
@@ -53,6 +52,7 @@ let
     vimPlugins.kulala-nvim
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
+    vimPlugins.persisted-nvim
     vimPlugins.pi-nvim
     vimPlugins.project-tree-nvim
     configuration
