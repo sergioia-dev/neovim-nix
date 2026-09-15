@@ -123,14 +123,14 @@ keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
 
 keymap({ "n", "v" }, "<C-w>s", "<Cmd>Persisted save<CR>", { desc = "Save session" })
 
-keymap({ "v", "n", "t" }, "<C-w>%", "<Cmd>rightbelow vsplit | term<CR>", { desc = "Open terminal in vertical split" })
+keymap({ "v", "n" }, "<C-w>%", "<Cmd>rightbelow vsplit | term<CR>", { desc = "Open terminal in vertical split" })
 
-keymap({ "v", "n", "t" }, '<C-w>"', "<Cmd>rightbelow split | term<CR>", { desc = "Open terminal in horizontal split" })
+keymap({ "v", "n" }, '<C-w>"', "<Cmd>rightbelow split | term<CR>", { desc = "Open terminal in horizontal split" })
 
-keymap({ "v", "n", "t" }, "<C-w><Left>", "<Cmd>vertical resize -5<CR>", { desc = "Shrink window width" })
+keymap({ "v", "n" }, "<C-w><Left>", "<Cmd>vertical resize -5<CR>", { desc = "Shrink window width" })
 
-keymap({ "v", "n", "t" }, "<C-w><Right>", "<Cmd>vertical resize +5<CR>", { desc = "Grow window width" })
+keymap({ "v", "n" }, "<C-w><Right>", "<Cmd>vertical resize +5<CR>", { desc = "Grow window width" })
 
-keymap({ "v", "n", "t" }, "<C-w><Up>", "<Cmd>horizontal resize +5<CR>", { desc = "Grow window height" })
+keymap({ "v", "n" }, "<C-w><Up>", "<Cmd>horizontal resize +5<CR>", { desc = "Grow window height" })
 
-keymap({ "v", "n", "t" }, "<C-w><Down>", "<Cmd>horizontal resize -5<CR>", { desc = "Shrink window height" })
+keymap({ "v", "n" }, "<C-w><Down>", "<Cmd>horizontal resize -5<CR>", { desc = "Shrink window height" })
