@@ -71,7 +71,7 @@ local function focus_non_terminal_window()
 	return false
 end
 
--- Close any other sidebar (DBUI, netrw, or terminal) so only one sidebar is visible at a time.
+-- Close any other sidebar (DBUI, netrw, or vertical terminal) so only one sidebar is visible at a time.
 -- Safe to call from other modules; does nothing if no other sidebar is open.
 function M.close_other_sidebars()
 	focus_non_terminal_window()
@@ -86,14 +86,17 @@ function M.close_other_sidebars()
 		vim.api.nvim_win_close(explorer_win, true)
 	end
 
-	-- Close the terminal too, so only one sidebar is visible at a time
+	-- Close the vertical terminal too, so only one sidebar is visible at a time
 	require("plugins.terminal").close_terminal()
 end
+-- Close the horizontal terminal too, so only one sidebar is visible at a time
+	require("plugins.horizontal_terminal").close_terminal()
 
 -- Called by <leader>fm. Closes DadBod first, then toggles the default file explorer using :Lexplore!.
 function M.lexplore()
 	focus_non_terminal_window()
 	require("plugins.terminal").close_terminal()
+require("plugins.horizontal_terminal").close_terminal()
 	-- Close DB sidebar first so only the explorer remains
 	if dadbod_open then
 		vim.cmd("DBUIToggle")
@@ -113,6 +116,7 @@ end
 function M.toggle_dadbod()
 	focus_non_terminal_window()
 	require("plugins.terminal").close_terminal()
+require("plugins.horizontal_terminal").close_terminal()
 	local explorer_win = get_explorer_window()
 	if explorer_win then
 		vim.api.nvim_win_close(explorer_win, true)

@@ -28,15 +28,15 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
--- Automatically enter Insert mode when a terminal opens
-vim.api.nvim_create_autocmd("TermOpen", {
-	group = vim.api.nvim_create_augroup("TerminalSettings", { clear = true }),
-	pattern = "*",
-	callback = function()
-		vim.cmd("startinsert")
-	end,
-})
-
+-- -- Automatically enter Insert mode when a terminal opens
+-- vim.api.nvim_create_autocmd("TermOpen", {
+-- 	group = vim.api.nvim_create_augroup("TerminalSettings", { clear = true }),
+-- 	pattern = "*",
+-- 	callback = function()
+-- 		vim.cmd("startinsert")
+-- 	end,
+-- })
+--
 -- Terminal toggle is now configured in configuration/lua/plugins/terminal.lua
 
 vim.diagnostic.config(config)

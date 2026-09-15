@@ -6,12 +6,17 @@ local terminal_open = false
 -- Cache the terminal buffer so the same session can be reused across toggles
 local term_buf = nil
 
--- Return the window ID if a terminal window is visible in any window.
+-- Return the window ID if a vertical terminal window is visible in any window.
+-- A vertical terminal is identified by buftype == "terminal" and a window width
+-- of 30% or less of the screen (distinguishing it from the horizontal terminal).
 local function get_terminal_window()
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
 		local buf = vim.api.nvim_win_get_buf(win)
 		if vim.bo[buf].buftype == "terminal" then
-			return win
+			local width = vim.api.nvim_win_get_width(win)
+			if width <= math.floor(vim.o.columns * 0.30) then
+				return win
+			end
 		end
 	end
 	return nil
@@ -54,6 +59,8 @@ function M.toggle_right_terminal()
 	-- Close any other sidebar (DBUI or netrw) so the terminal is the only sidebar
 	require("plugins.sidebars").close_other_sidebars()
 
+-- Close the horizontal terminal too, so only one terminal is visible at a time
+	require("plugins.horizontal_terminal").close_terminal()
 	-- Calculate 30% of the total screen columns
 	local width = math.floor(vim.o.columns * 0.30)
 
