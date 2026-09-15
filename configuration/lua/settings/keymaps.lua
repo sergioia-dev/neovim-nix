@@ -7,7 +7,7 @@ keymap("n", "<leader>ft", ":ProjectTree<CR>", { desc = "Toggle Project Tree", si
 
 -- Navigation
 keymap(
-	{ "n", "t", "v" },
+	{ "n", "v" },
 	"<leader>fm",
 	require("plugins.sidebars").lexplore,
 	{ desc = "Open Explorer / DBUI", silent = true }
@@ -104,14 +104,14 @@ keymap(
 )
 
 keymap(
-	{ "n", "t", "v" },
+	{ "n", "v" },
 	"<leader>tv",
 	require("plugins.terminal").toggle_right_terminal,
 	{ desc = "Toggle Right Terminal", silent = true }
 )
 
 keymap(
-	{ "n", "t" },
+	{ "n", "v" },
 	"<leader>th",
 	require("plugins.horizontal_terminal").toggle_bottom_terminal,
 	{ desc = "Toggle Bottom Terminal", silent = true }
