@@ -17,8 +17,6 @@ keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", si
 
 keymap("n", "<leader>fc", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
 
-keymap("n", "<leader>fs", ":Telescope persisted theme=dropdown<CR>", { desc = "Find saved sessions", silent = true })
-
 keymap("n", "<leader>fa", ":Telescope live_grep theme=dropdown<CR>", { desc = "Live grep", silent = true })
 
 keymap({ "n", "v" }, "<Tab>", ":Telescope buffers theme=ivy<CR>", { desc = "Live grep", silent = true })
@@ -83,25 +81,11 @@ keymap(
 keymap("n", "<leader>gg", "<cmd>:LazyGit<CR>", { desc = "Toggle LazyGit UI", silent = true })
 keymap("n", "<leader>gb", "<cmd>:Git blame<CR>", { desc = "Open Git Blames", silent = true })
 
--- Containers
-local container_engine = vim.fn.executable("podman") == 1 and "podman" or "docker"
-keymap(
-	"n",
-	"<F3>",
-	"<cmd>:lua LazyDocker.toggle({engine = '" .. container_engine .. "'})<CR>",
-	{ desc = "Toggle LazyDocker (" .. container_engine .. ")", silent = true }
-)
-
 -- Pi agent
 keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
 keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
 
-keymap(
-	{ "n", "t", "v" },
-	"<F1>",
-	require("plugins.sidebars").toggle_dadbod,
-	{ desc = "Toggle DadBod UI", silent = true }
-)
+keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
 keymap(
 	{ "n", "v" },
@@ -113,15 +97,13 @@ keymap(
 keymap(
 	{ "n", "v" },
 	"<leader>th",
-	require("plugins.horizontal_terminal").toggle_bottom_terminal,
+	require("plugins.terminal").toggle_bottom_terminal,
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
 
 keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
-
-keymap({ "n", "v" }, "<C-w>s", "<Cmd>Persisted save<CR>", { desc = "Save session" })
 
 keymap({ "v", "n" }, "<C-w>%", "<Cmd>rightbelow vsplit | term<CR>", { desc = "Open terminal in vertical split" })
 

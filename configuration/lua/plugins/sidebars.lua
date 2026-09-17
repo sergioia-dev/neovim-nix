@@ -57,6 +57,25 @@ local function get_explorer_window()
 	return nil
 end
 
+-- Return the window ID if the DadBod UI is visible in any window.
+-- DadBod UI buffers have filetype 'dbui'.
+local function get_dadbod_window()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local buf = vim.api.nvim_win_get_buf(win)
+		if vim.bo[buf].filetype == "dbui" then
+			return win
+		end
+	end
+	return nil
+end
+
+-- Check if DadBod UI is currently open by detecting the actual window.
+-- This is more reliable than the dadbod_open flag which can get out of sync.
+function M.is_dadbod_open()
+	return get_dadbod_window() ~= nil
+end
+
+
 -- Switch to a non-terminal window so a sidebar splits relative to a
 -- real file buffer instead of opening over a terminal buffer.
 -- Returns true if a non-terminal window was focused, false otherwise.
@@ -71,12 +90,12 @@ local function focus_non_terminal_window()
 	return false
 end
 
--- Close any other sidebar (DBUI, netrw, or vertical terminal) so only one sidebar is visible at a time.
+-- Close any other sidebar (DBUI, netrw, or vertical/horizontal terminal) so only one sidebar is visible at a time.
 -- Safe to call from other modules; does nothing if no other sidebar is open.
 function M.close_other_sidebars()
 	focus_non_terminal_window()
 
-	if dadbod_open then
+	if M.is_dadbod_open() then
 		vim.cmd("DBUIToggle")
 		dadbod_open = false
 	end
@@ -89,16 +108,13 @@ function M.close_other_sidebars()
 	-- Close the vertical terminal too, so only one sidebar is visible at a time
 	require("plugins.terminal").close_terminal()
 end
--- Close the horizontal terminal too, so only one sidebar is visible at a time
-	require("plugins.horizontal_terminal").close_terminal()
 
 -- Called by <leader>fm. Closes DadBod first, then toggles the default file explorer using :Lexplore!.
 function M.lexplore()
 	focus_non_terminal_window()
 	require("plugins.terminal").close_terminal()
-require("plugins.horizontal_terminal").close_terminal()
 	-- Close DB sidebar first so only the explorer remains
-	if dadbod_open then
+	if M.is_dadbod_open() then
 		vim.cmd("DBUIToggle")
 		dadbod_open = false
 	end
@@ -116,13 +132,12 @@ end
 function M.toggle_dadbod()
 	focus_non_terminal_window()
 	require("plugins.terminal").close_terminal()
-require("plugins.horizontal_terminal").close_terminal()
 	local explorer_win = get_explorer_window()
 	if explorer_win then
 		vim.api.nvim_win_close(explorer_win, true)
 	end
 
-	if dadbod_open then
+	if M.is_dadbod_open() then
 		vim.cmd("DBUIToggle")
 		dadbod_open = false
 		return

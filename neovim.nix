@@ -48,11 +48,9 @@ let
     vimPlugins.noice-nvim
     vimPlugins.smear-cursor-nvim
     vimPlugins.lazygit-nvim
-    vimPlugins.lazydocker-nvim
     vimPlugins.kulala-nvim
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
-    vimPlugins.persisted-nvim
     vimPlugins.pi-nvim
     vimPlugins.project-tree-nvim
     configuration
