@@ -18,6 +18,7 @@ function M.setup()
 	require("plugins.pi")
 	require("plugins.project-tree")
 	require("plugins.terminal")
+	require("plugins.marks")
 end
 
 M.setup()
