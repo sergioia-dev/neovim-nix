@@ -3,8 +3,6 @@ vim.g.maplocalleader = " "
 
 local keymap = vim.keymap.set
 
-keymap("n", "<leader>ft", ":ProjectTree<CR>", { desc = "Toggle Project Tree", silent = true })
-
 -- Navigation
 keymap(
 	{ "n", "v" },
@@ -17,7 +15,7 @@ keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", si
 
 keymap("n", "<leader>fc", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
 
-keymap("n", "<leader>fa", ":Telescope live_grep theme=dropdown<CR>", { desc = "Live grep", silent = true })
+keymap("n", "<leader>fa", ":Telescope live_grep<CR>", { desc = "Live grep", silent = true })
 
 keymap({ "n", "v" }, "<Tab>", ":Telescope buffers theme=ivy<CR>", { desc = "Live grep", silent = true })
 
@@ -101,18 +99,6 @@ keymap(
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
+keymap({ "n", "v" }, "<leader>m", "<Cmd>Telescope marks theme=dropdown<CR>", { desc = "Save File", silent = true })
+
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
-
-keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
-
-keymap({ "v", "n" }, "<C-w>%", "<Cmd>rightbelow vsplit | term<CR>", { desc = "Open terminal in vertical split" })
-
-keymap({ "v", "n" }, '<C-w>"', "<Cmd>rightbelow split | term<CR>", { desc = "Open terminal in horizontal split" })
-
-keymap({ "v", "n" }, "<C-w><Left>", "<Cmd>vertical resize -5<CR>", { desc = "Shrink window width" })
-
-keymap({ "v", "n" }, "<C-w><Right>", "<Cmd>vertical resize +5<CR>", { desc = "Grow window width" })
-
-keymap({ "v", "n" }, "<C-w><Up>", "<Cmd>horizontal resize +5<CR>", { desc = "Grow window height" })
-
-keymap({ "v", "n" }, "<C-w><Down>", "<Cmd>horizontal resize -5<CR>", { desc = "Shrink window height" })

@@ -52,7 +52,6 @@ let
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
     vimPlugins.pi-nvim
-    vimPlugins.project-tree-nvim
     vimPlugins.marks-nvim
     configuration
   ];

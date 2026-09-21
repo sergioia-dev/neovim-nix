@@ -7,6 +7,7 @@ vim.opt.scrolloff = 999
 vim.opt.sidescrolloff = 999
 vim.opt.expandtab = true
 vim.opt.clipboard = "unnamed"
+vim.o.autoread = true
 
 vim.cmd("colorscheme catppuccin-mocha")
 vim.defer_fn(function()
@@ -19,6 +20,7 @@ local config = {
 	underline = true,
 	severity_sort = true,
 }
+vim.diagnostic.config(config)
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "netrw",
@@ -27,19 +29,3 @@ vim.api.nvim_create_autocmd("FileType", {
 		vim.keymap.set("n", "<F1>", "<Nop>", { remap = false, buffer = true })
 	end,
 })
-
--- -- Automatically enter Insert mode when a terminal opens
--- vim.api.nvim_create_autocmd("TermOpen", {
--- 	group = vim.api.nvim_create_augroup("TerminalSettings", { clear = true }),
--- 	pattern = "*",
--- 	callback = function()
--- 		vim.cmd("startinsert")
--- 	end,
--- })
---
--- Terminal toggle is now configured in configuration/lua/plugins/terminal.lua
-
-vim.diagnostic.config(config)
-
--- Enable autoread
-vim.o.autoread = true
