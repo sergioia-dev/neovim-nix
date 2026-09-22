@@ -79,13 +79,11 @@
             git
             lldb
             lazygit
-            lazydocker
             jq
             lsof
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
             cargo
-            tree
           ];
 
           pluginDependencies-minimal = with pkgs; [
