@@ -4,12 +4,6 @@ vim.g.maplocalleader = " "
 local keymap = vim.keymap.set
 
 -- Navigation
-keymap(
-	{ "n", "v" },
-	"<leader>fm",
-	require("plugins.sidebars").lexplore,
-	{ desc = "Open Explorer / DBUI", silent = true }
-)
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
@@ -94,6 +88,13 @@ keymap(
 	"<leader>tv",
 	require("plugins.terminal").toggle_right_terminal,
 	{ desc = "Toggle Right Terminal", silent = true }
+)
+
+keymap(
+	{ "n", "v" },
+	"<leader>fm",
+	require("plugins.sidebars").minifiles_toggle,
+	{ desc = "Open / Toggle mini.files Explorer", silent = true }
 )
 
 keymap(

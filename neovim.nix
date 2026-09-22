@@ -53,6 +53,8 @@ let
     vimPlugins.nix-develop-nvim
     vimPlugins.pi-nvim
     vimPlugins.marks-nvim
+    vimPlugins.nvim-tree-lua
+    vimPlugins.mini-files
     configuration
   ];
 
