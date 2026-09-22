@@ -50,23 +50,5 @@ cmp.setup({
 		{ name = "path" },
 		{ name = "buffer" },
 		{ name = "vim-dadbod-completion" },
-		{ name = "dadbod_grip" },
 	}),
-})
-
--- Filetype-specific setup for SQL
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "sql", "mysql", "plsql" },
-	callback = function()
-		-- Keep ALL sources + add vim-dadbod-completion (don't replace!)
-		cmp.setup.buffer({
-			sources = {
-				{ name = "vim-dadbod-completion" },
-				{ name = "luasnip" },
-				{ name = "nvim_lsp" },
-				{ name = "path" },
-				{ name = "buffer" },
-			},
-		})
-	end,
 })
