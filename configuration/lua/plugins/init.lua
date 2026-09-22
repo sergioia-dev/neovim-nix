@@ -18,6 +18,7 @@ function M.setup()
 	require("plugins.pi")
 	require("plugins.terminal")
 	require("plugins.marks")
+	require("plugins.base64")
 end
 
 M.setup()

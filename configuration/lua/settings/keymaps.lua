@@ -69,6 +69,8 @@ keymap(
 	{ desc = "Code Definitions", silent = true }
 )
 
+keymap({ "n", "v" }, "<leader>m", "<Cmd>Telescope marks theme=dropdown<CR>", { desc = "Save File", silent = true })
+
 -- Git
 keymap(
 	"n",
@@ -85,6 +87,8 @@ keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
+keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
+
 keymap(
 	{ "n", "v" },
 	"<leader>tv",
@@ -98,7 +102,5 @@ keymap(
 	require("plugins.terminal").toggle_bottom_terminal,
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
-
-keymap({ "n", "v" }, "<leader>m", "<Cmd>Telescope marks theme=dropdown<CR>", { desc = "Save File", silent = true })
 
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
