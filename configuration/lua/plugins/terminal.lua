@@ -8,16 +8,17 @@ local horizontal_terminal_open = false
 local vertical_term_buf = nil
 local horizontal_term_buf = nil
 
--- Shared focus function
+-- Shared focus function. Skips floating windows too so a split is never anchored
+-- to mini.files' floating explorer or another overlay.
 local function focus_non_terminal_window()
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local is_float = vim.api.nvim_win_get_config(win).relative ~= ""
 		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.bo[buf].buftype ~= "terminal" then
+		if not is_float and vim.bo[buf].buftype ~= "terminal" then
 			vim.api.nvim_set_current_win(win)
-			return true
+			return
 		end
 	end
-	return false
 end
 
 -- Return the window ID if a vertical terminal window is visible.

@@ -22,11 +22,10 @@ local DADBOD_CLIENTS = {
 -- Cache for client availability (set once on module load)
 local dadbod_client_available = nil
 
--- Track which sidebar is currently open (mutually exclusive)
-local dadbod_open = false
-
-local minifiles_toggle = require("plugins.mini-files").minifiles_toggle
-M.minifiles_toggle = minifiles_toggle
+local mini_files = require("plugins.mini-files")
+local minifiles_toggle = mini_files.minifiles_toggle
+local minifiles_close = mini_files.minifiles_close
+local minifiles_is_open = mini_files.minifiles_is_open
 
 local function check_dadbod_clients()
 	if dadbod_client_available ~= nil then
@@ -61,24 +60,23 @@ local function get_dadbod_window()
 	return nil
 end
 
--- Check if DadBod UI is currently open by detecting the actual window.
--- This is more reliable than the dadbod_open flag which can get out of sync.
-function M.is_dadbod_open()
+-- Return true when the DadBod UI is visible in any window.
+local function is_dadbod_open()
 	return get_dadbod_window() ~= nil
 end
 
--- Switch to a non-terminal window so a sidebar splits relative to a
--- real file buffer instead of opening over a terminal buffer.
--- Returns true if a non-terminal window was focused, false otherwise.
+-- Switch to a non-terminal, non-floating window so a sidebar splits relative to a
+-- real file buffer instead of opening over a terminal or over mini.files' float.
+-- Does nothing when no such window exists.
 local function focus_non_terminal_window()
 	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		local is_float = vim.api.nvim_win_get_config(win).relative ~= ""
 		local buf = vim.api.nvim_win_get_buf(win)
-		if vim.bo[buf].buftype ~= "terminal" then
+		if not is_float and vim.bo[buf].buftype ~= "terminal" then
 			vim.api.nvim_set_current_win(win)
-			return true
+			return
 		end
 	end
-	return false
 end
 
 -- Close any other sidebar (DBUI, terminal, or mini.files) so only one sidebar is visible at a time.
@@ -86,26 +84,31 @@ end
 function M.close_other_sidebars()
 	focus_non_terminal_window()
 
-	if M.is_dadbod_open() then
+	if is_dadbod_open() then
 		vim.cmd("DBUIToggle")
-		dadbod_open = false
 	end
 
-	minifiles_toggle()
+	minifiles_close()
 
 	-- Close the terminal too, so only one sidebar is visible at a time
 	require("plugins.terminal").close_terminal()
 end
 
--- Called by <leader>fm. Closes DadBod first, then toggles the default file explorer (mini.files).
-function M.lexplore()
+-- Called by <leader>fm. Toggles the mini.files explorer, following the same
+-- workflow as the DBUI (<F1>) and terminal (<leader>tv / <leader>th) sidebars:
+-- if mini.files is already open, close it; otherwise close every other sidebar
+-- first and then open it, so exactly one sidebar is ever visible.
+function M.toggle_minifiles()
 	focus_non_terminal_window()
-	require("plugins.terminal").close_terminal()
-	-- Close DB sidebar first so only the explorer remains
-	if M.is_dadbod_open() then
-		vim.cmd("DBUIToggle")
-		dadbod_open = false
+
+	-- Toggle off: mini.files is already the visible sidebar
+	if minifiles_is_open() then
+		minifiles_close()
+		return
 	end
+
+	-- Toggle on: close DBUI / terminals first, then open the explorer
+	M.close_other_sidebars()
 
 	minifiles_toggle()
 end
@@ -115,11 +118,9 @@ end
 function M.toggle_dadbod()
 	focus_non_terminal_window()
 	require("plugins.terminal").close_terminal()
-	minifiles_toggle()
 
-	if M.is_dadbod_open() then
+	if is_dadbod_open() then
 		vim.cmd("DBUIToggle")
-		dadbod_open = false
 		return
 	end
 
@@ -128,8 +129,10 @@ function M.toggle_dadbod()
 		return
 	end
 
+	-- Close mini.files only now (never open it) so DBUI is the only sidebar
+	minifiles_close()
+
 	vim.cmd("DBUIToggle")
-	dadbod_open = true
 end
 
 return M

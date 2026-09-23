@@ -3,4 +3,5 @@ AGENTS.md
 .gitignore
 .env
 .grip/
+graphify-out/
 

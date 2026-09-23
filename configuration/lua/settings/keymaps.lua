@@ -93,8 +93,8 @@ keymap(
 keymap(
 	{ "n", "v" },
 	"<leader>fm",
-	require("plugins.sidebars").minifiles_toggle,
-	{ desc = "Open / Toggle mini.files Explorer", silent = true }
+	require("plugins.sidebars").toggle_minifiles,
+	{ desc = "Toggle mini.files Explorer Sidebar", silent = true }
 )
 
 keymap(
