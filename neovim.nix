@@ -15,7 +15,6 @@ let
   packageName = "custom";
 
   startPlugins = [
-    vimPlugins.rustaceanvim
     vimPlugins.lualine-nvim
     vimPlugins.nvim-autopairs
     vimPlugins.luasnip
@@ -47,7 +46,6 @@ let
     vimPlugins.nvim-notify
     vimPlugins.noice-nvim
     vimPlugins.smear-cursor-nvim
-    vimPlugins.lazygit-nvim
     vimPlugins.kulala-nvim
     vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
@@ -55,6 +53,9 @@ let
     vimPlugins.marks-nvim
     vimPlugins.nvim-tree-lua
     vimPlugins.mini-files
+    vimPlugins.neogit
+    vimPlugins.diffview-nvim
+    vimPlugins.nvim-web-devicons
     configuration
   ];
 

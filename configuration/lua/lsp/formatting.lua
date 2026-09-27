@@ -2,8 +2,6 @@ require("conform").setup({
 	formatters_by_ft = {
 
 		lua = { "stylua", lsp_format = "fallback" },
-		python = { "black", lsp_format = "fallback" },
-		rust = { "rustfmt", lsp_format = "fallback" },
 		javascript = { "biome", lsp_format = "fallback" },
 		javascriptreact = { "biome", lsp_format = "fallback" },
 		typescriptreact = { "biome", lsp_format = "fallback" },

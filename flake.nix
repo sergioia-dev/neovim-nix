@@ -47,14 +47,6 @@
             jdt-language-server
             bash-language-server
             nixd
-            pyright
-            rust-analyzer
-          ];
-
-          LSPs-minimal = with pkgs; [
-            docker-language-server
-            bash-language-server
-            nixd
           ];
 
           formatters = with pkgs; [
@@ -62,34 +54,20 @@
             sql-formatter
             biome
             nixfmt
-            black
             shfmt
             kulala-fmt
-            rustfmt
-          ];
-
-          formatters-minimal = with pkgs; [
-            sql-formatter
-            nixfmt
-            shfmt
           ];
 
           pluginDependencies = with pkgs; [
             ripgrep
             git
             lldb
-            lazygit
             jq
             lsof
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
-            cargo
           ];
 
-          pluginDependencies-minimal = with pkgs; [
-            curl
-            ripgrep
-          ];
         in
         {
           default = pkgs.callPackage ./neovim.nix {
@@ -101,13 +79,6 @@
             inherit pkgs-unstable;
           };
 
-          minimal = pkgs.callPackage ./minimal/neovim-minimal.nix {
-            configuration = pkgs.runCommandLocal "configuration" { } ''
-              mkdir -p $out
-              cp -r ${./minimal/configuration}/* $out
-            '';
-            runtimeDependencies = LSPs-minimal ++ formatters-minimal ++ pluginDependencies-minimal;
-          };
         }
       );
 

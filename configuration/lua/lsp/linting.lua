@@ -5,6 +5,5 @@ lint.linters_by_ft = {
 	typescript = { "biome" },
 	typescriptreact = { "biome" },
 	javascriptreact = { "biome" },
-	python = { "pylint" },
 	nix = { "nix" },
 }

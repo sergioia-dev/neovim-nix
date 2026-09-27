@@ -72,8 +72,19 @@ keymap(
 	"<cmd>:Gitsigns toggle_current_line_blame<CR>",
 	{ desc = "Toggle Line blames", silent = true }
 )
-keymap("n", "<leader>gg", "<cmd>:LazyGit<CR>", { desc = "Toggle LazyGit UI", silent = true })
-keymap("n", "<leader>gb", "<cmd>:Git blame<CR>", { desc = "Open Git Blames", silent = true })
+keymap("n", "<leader>gg", "<cmd>:Neogit kind=replace<CR>", { desc = "Toggle Neogit Interface", silent = true })
+keymap(
+	"n",
+	"<leader>gb",
+	"<cmd>:Telescope git_branches<CR>",
+	{ desc = "Open a view with the git branches", silent = true }
+)
+keymap(
+	"n",
+	"<leader>gc",
+	"<cmd>:Telescope git_commits<CR>",
+	{ desc = "Open a view with the git commits", silent = true }
+)
 
 -- Pi agent
 keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
