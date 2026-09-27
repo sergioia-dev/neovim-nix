@@ -4,6 +4,9 @@ vim.g.maplocalleader = " "
 local keymap = vim.keymap.set
 
 -- Navigation
+keymap("n", "<leader>np", function()
+	require("../plugins/net_picker").net_picker()
+end, { desc = "Kill network process (port/pid/name)" })
 
 keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
 
