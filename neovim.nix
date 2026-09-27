@@ -39,7 +39,6 @@ let
     vimPlugins.vim-dadbod-ui
     vimPlugins.vim-dadbod-completion
     vimPlugins.vim-dadbod
-    vimPlugins.dressing-nvim
     vimPlugins.todo-comments-nvim
     vimPlugins.nvim-treesitter.withAllGrammars
     vimPlugins.nui-nvim
@@ -51,7 +50,6 @@ let
     vimPlugins.nix-develop-nvim
     vimPlugins.pi-nvim
     vimPlugins.marks-nvim
-    vimPlugins.nvim-tree-lua
     vimPlugins.mini-files
     vimPlugins.neogit
     vimPlugins.diffview-nvim
