@@ -29,37 +29,36 @@ end, { desc = "Live grep in Current file", silent = true })
 -- LSP
 keymap(
 	"n",
-	"<leader>cr",
+	"<leader>lr",
 	"<cmd>:Lspsaga finder<CR>",
 	{ desc = "Show the code references and Implementations", silent = true }
 )
-
-keymap("n", "<leader>cR", "<cmd>:Lspsaga rename<CR>", { desc = "Code References", silent = true })
+keymap("n", "<leader>lR", "<cmd>:Lspsaga rename<CR>", { desc = "Code References", silent = true })
 keymap("n", "K", "<cmd>:Lspsaga hover_doc<CR>", { desc = "Documentation Hover", silent = true })
-keymap("n", "<leader>co", "<cmd>:Lspsaga outline<CR>", { desc = "Code References", silent = true })
-keymap("n", "<leader>cf", function()
+keymap("n", "<leader>lo", "<cmd>:Lspsaga outline<CR>", { desc = "Code References", silent = true })
+keymap("n", "<leader>lf", function()
 	require("fzf-lua").treesitter()
 end, { desc = "Find Functions,Variables and more", silent = true })
-keymap("n", "<leader>ca", "<cmd>:Lspsaga code_action<CR>", { desc = "Code Actions", silent = true })
-keymap("n", "<leader>ce", function()
+keymap("n", "<leader>la", "<cmd>:Lspsaga code_action<CR>", { desc = "Code Actions", silent = true })
+keymap("n", "<leader>le", function()
 	require("fzf-lua").diagnostics_workspace()
 end, { desc = "Code Diagnostics", silent = true })
-keymap("n", "<leader>cq", function()
+keymap("n", "<leader>lq", function()
 	require("fzf-lua").quickfix()
 end, { desc = "Quick Fix List", silent = true })
 keymap(
 	"n",
-	"<leader>cs",
+	"<leader>ls",
 	"<cmd>:lua vim.diagnostic.open_float()<CR>",
 	{ desc = "Show whole Code warning/error/suggestion", silent = true }
 )
-keymap("n", "<leader>ci", function()
+keymap("n", "<leader>li", function()
 	require("fzf-lua").lsp_implementations()
 end, { desc = "Code Definitions", silent = true })
 
 keymap({ "n", "v" }, "<leader>m", function()
 	require("fzf-lua").marks()
-end, { desc = "Save File", silent = true })
+end, { desc = "Show Marks", silent = true })
 
 -- Git
 keymap(
@@ -77,8 +76,7 @@ keymap("n", "<leader>gc", function()
 end, { desc = "Open a view with the git commits", silent = true })
 
 -- Pi agent
-keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
-keymap({ "n", "v" }, "<leader>ps", ":PiSessions<CR>")
+keymap({ "n", "v" }, "<leader>pp", "<cmd>Pi<CR>")
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
