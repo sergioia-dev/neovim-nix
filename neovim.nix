@@ -20,8 +20,6 @@ let
     vimPlugins.luasnip
     vimPlugins.friendly-snippets
     vimPlugins.which-key-nvim
-    vimPlugins.telescope-nvim
-    vimPlugins.plenary-nvim
     vimPlugins.gitsigns-nvim
     vimPlugins.render-markdown-nvim
     vimPlugins.nvim-lspconfig
@@ -54,6 +52,8 @@ let
     vimPlugins.neogit
     vimPlugins.diffview-nvim
     vimPlugins.nvim-web-devicons
+    vimPlugins.fzf-lua
+    vimPlugins.net_picker
     configuration
   ];
 

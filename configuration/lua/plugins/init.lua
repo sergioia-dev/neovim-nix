@@ -4,7 +4,7 @@ function M.setup()
 	-- Load all configuration parts
 	require("plugins.gitsigns")
 	require("plugins.luasnip")
-	require("plugins.telescope")
+	require("plugins.render-markdown")
 	require("plugins.net_picker")
 	require("plugins.kulala")
 	require("plugins.lualine")

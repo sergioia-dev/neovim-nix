@@ -1,3 +1,6 @@
 [submodule "plugins/project-tree"]
 	path = plugins/project-tree
 	url = git@github.com:sergioia-dev/project-tree-nvim.git
+[submodule "plugins/net_picker"]
+	path = plugins/net_picker
+	url = git@github.com:sergioia-dev/net_picker.git

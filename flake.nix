@@ -19,6 +19,7 @@
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           project-tree-nvim = final.callPackage ./derivations/project-tree-nvim { };
+          net_picker = final.callPackage ./derivations/net_picker { };
         };
       };
 
@@ -66,6 +67,7 @@
             lsof
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
+            fzf
           ];
 
         in

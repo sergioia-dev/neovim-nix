@@ -4,24 +4,27 @@ vim.g.maplocalleader = " "
 local keymap = vim.keymap.set
 
 -- Navigation
-keymap("n", "<leader>np", function()
-	require("../plugins/net_picker").net_picker()
-end, { desc = "Kill network process (port/pid/name)" })
+keymap("n", "<leader>fn", function()
+	require("net_picker").setup({ telescope = false, fzf = true }).net_picker()
+end, { desc = "Net picker (fzf-lua backend)" })
 
-keymap("n", "<leader>ff", ":Telescope find_files<CR>", { desc = "Find files", silent = true })
+keymap("n", "<leader>ff", function()
+	require("fzf-lua").files()
+end, { desc = "Find files", silent = true })
 
-keymap("n", "<leader>fc", ":TodoTelescope<CR>", { desc = "Find Todo comments", silent = true })
+keymap("n", "<leader>fc", ":TodoFzfLua<CR>", { desc = "Find Todo comments", silent = true })
 
-keymap("n", "<leader>fa", ":Telescope live_grep<CR>", { desc = "Live grep", silent = true })
+keymap("n", "<leader>fa", function()
+	require("fzf-lua").live_grep()
+end, { desc = "Live grep", silent = true })
 
-keymap({ "n", "v" }, "<Tab>", ":Telescope buffers theme=ivy<CR>", { desc = "Live grep", silent = true })
+keymap({ "n", "v" }, "<leader><Tab>", function()
+	require("fzf-lua").buffers()
+end, { desc = "Live grep", silent = true })
 
-keymap(
-	"n",
-	"<leader>fi",
-	"<cmd>:lua require'telescope.builtin'.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown({}))<CR>",
-	{ desc = "Live grep in Current file", silent = true }
-)
+keymap("n", "<leader>fi", function()
+	require("fzf-lua").blines()
+end, { desc = "Live grep in Current file", silent = true })
 
 -- LSP
 keymap(
@@ -34,39 +37,29 @@ keymap(
 keymap("n", "<leader>cR", "<cmd>:Lspsaga rename<CR>", { desc = "Code References", silent = true })
 keymap("n", "K", "<cmd>:Lspsaga hover_doc<CR>", { desc = "Documentation Hover", silent = true })
 keymap("n", "<leader>co", "<cmd>:Lspsaga outline<CR>", { desc = "Code References", silent = true })
-keymap(
-	"n",
-	"<leader>cf",
-	"<cmd>:lua require'telescope.builtin'.treesitter(require('telescope.themes').get_ivy({}))<CR>",
-	{ desc = "Find Functions,Variables and more", silent = true }
-)
+keymap("n", "<leader>cf", function()
+	require("fzf-lua").treesitter()
+end, { desc = "Find Functions,Variables and more", silent = true })
 keymap("n", "<leader>ca", "<cmd>:Lspsaga code_action<CR>", { desc = "Code Actions", silent = true })
-keymap(
-	"n",
-	"<leader>ce",
-	"<cmd>:lua require('telescope.builtin').diagnostics(require('telescope.themes').get_ivy({}))<CR>",
-	{ desc = "Code Diagnostics", silent = true }
-)
-keymap(
-	"n",
-	"<leader>cq",
-	"<cmd>:lua require'telescope.builtin'.quickfix(require('telescope.themes').get_ivy({})) <CR>",
-	{ desc = "Quick Fix List", silent = true }
-)
+keymap("n", "<leader>ce", function()
+	require("fzf-lua").diagnostics_workspace()
+end, { desc = "Code Diagnostics", silent = true })
+keymap("n", "<leader>cq", function()
+	require("fzf-lua").quickfix()
+end, { desc = "Quick Fix List", silent = true })
 keymap(
 	"n",
 	"<leader>cs",
 	"<cmd>:lua vim.diagnostic.open_float()<CR>",
 	{ desc = "Show whole Code warning/error/suggestion", silent = true }
 )
-keymap(
-	"n",
-	"<leader>ci",
-	"<cmd>:lua require('telescope.builtin').lsp_implementations(require('telescope.themes').get_cursor({}))<CR>",
-	{ desc = "Code Definitions", silent = true }
-)
+keymap("n", "<leader>ci", function()
+	require("fzf-lua").lsp_implementations()
+end, { desc = "Code Definitions", silent = true })
 
-keymap({ "n", "v" }, "<leader>m", "<Cmd>Telescope marks theme=dropdown<CR>", { desc = "Save File", silent = true })
+keymap({ "n", "v" }, "<leader>m", function()
+	require("fzf-lua").marks()
+end, { desc = "Save File", silent = true })
 
 -- Git
 keymap(
@@ -76,18 +69,12 @@ keymap(
 	{ desc = "Toggle Line blames", silent = true }
 )
 keymap("n", "<leader>gg", "<cmd>:Neogit kind=replace<CR>", { desc = "Toggle Neogit Interface", silent = true })
-keymap(
-	"n",
-	"<leader>gb",
-	"<cmd>:Telescope git_branches<CR>",
-	{ desc = "Open a view with the git branches", silent = true }
-)
-keymap(
-	"n",
-	"<leader>gc",
-	"<cmd>:Telescope git_commits<CR>",
-	{ desc = "Open a view with the git commits", silent = true }
-)
+keymap("n", "<leader>gb", function()
+	require("fzf-lua").git_branches()
+end, { desc = "Open a view with the git branches", silent = true })
+keymap("n", "<leader>gc", function()
+	require("fzf-lua").git_commits()
+end, { desc = "Open a view with the git commits", silent = true })
 
 -- Pi agent
 keymap({ "n", "v" }, "<leader>pp", ":Pi<CR>")
@@ -119,3 +106,5 @@ keymap(
 )
 
 keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
+
+vim.keymap.del("n", "<leader>co") -- Remove Lspsaga's mapping
