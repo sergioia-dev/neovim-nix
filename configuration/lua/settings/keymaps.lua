@@ -12,7 +12,7 @@ keymap("n", "<leader>ff", function()
 	require("fzf-lua").files()
 end, { desc = "Find files", silent = true })
 
-keymap("n", "<leader>fc", ":TodoFzfLua<CR>", { desc = "Find Todo comments", silent = true })
+keymap("n", "<leader>fc", "<cmd>TodoFzfLua<CR>", { desc = "Find Todo comments", silent = true })
 
 keymap("n", "<leader>fa", function()
 	require("fzf-lua").live_grep()
@@ -34,12 +34,12 @@ keymap(
 	{ desc = "Show the code references and Implementations", silent = true }
 )
 keymap("n", "<leader>lR", "<cmd>:Lspsaga rename<CR>", { desc = "Code References", silent = true })
-keymap("n", "K", "<cmd>:Lspsaga hover_doc<CR>", { desc = "Documentation Hover", silent = true })
-keymap("n", "<leader>lo", "<cmd>:Lspsaga outline<CR>", { desc = "Code References", silent = true })
+keymap("n", "K", "<cmd>Lspsaga hover_doc<CR>", { desc = "Documentation Hover", silent = true })
+keymap("n", "<leader>lo", "<cmd>Lspsaga outline<CR>", { desc = "Code References", silent = true })
 keymap("n", "<leader>lf", function()
 	require("fzf-lua").treesitter()
 end, { desc = "Find Functions,Variables and more", silent = true })
-keymap("n", "<leader>la", "<cmd>:Lspsaga code_action<CR>", { desc = "Code Actions", silent = true })
+keymap("n", "<leader>la", "<cmd>Lspsaga code_action<CR>", { desc = "Code Actions", silent = true })
 keymap("n", "<leader>le", function()
 	require("fzf-lua").diagnostics_workspace()
 end, { desc = "Code Diagnostics", silent = true })
@@ -59,8 +59,8 @@ end, { desc = "Code Definitions", silent = true })
 keymap({ "n", "v" }, "<leader>m", function()
 	require("fzf-lua").marks()
 end, { desc = "Show Marks", silent = true })
-
--- Git
+--
+-- -- Git
 keymap(
 	"n",
 	"<leader>glb",
@@ -74,20 +74,11 @@ end, { desc = "Open a view with the git branches", silent = true })
 keymap("n", "<leader>gc", function()
 	require("fzf-lua").git_commits()
 end, { desc = "Open a view with the git commits", silent = true })
-
--- Pi agent
+--
+-- -- Pi agent
 keymap({ "n", "v" }, "<leader>pp", "<cmd>Pi<CR>")
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
-
-keymap("t", "<Esc>", [[<C-\><C-n>]], { desc = "Exit terminal mode" })
-
-keymap(
-	{ "n", "v" },
-	"<leader>tv",
-	require("plugins.terminal").toggle_right_terminal,
-	{ desc = "Toggle Right Terminal", silent = true }
-)
 
 keymap(
 	{ "n", "v" },
@@ -97,12 +88,19 @@ keymap(
 )
 
 keymap(
-	{ "n", "v" },
-	"<leader>th",
+	{ "n", "t" },
+	'<C-w>"',
 	require("plugins.terminal").toggle_bottom_terminal,
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
-keymap({ "n", "v" }, "<C-s>", ":w<CR>", { desc = "Save File", silent = true })
-
-vim.keymap.del("n", "<leader>co") -- Remove Lspsaga's mapping
+keymap(
+	{ "n", "t" },
+	"<C-w>%",
+	require("plugins.terminal").toggle_right_terminal,
+	{ desc = "Toggle Right Terminal", silent = true }
+)
+--
+keymap({ "n", "v" }, "<C-s>", "<cmd>w<CR>", { desc = "Save File", silent = true })
+--
+pcall(vim.keymap.del, "n", "<leader>co") -- Remove Lspsaga's mapping (missing mapping is fine)

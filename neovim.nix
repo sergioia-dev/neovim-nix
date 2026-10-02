@@ -54,6 +54,7 @@ let
     vimPlugins.nvim-web-devicons
     vimPlugins.fzf-lua
     vimPlugins.net_picker
+    vimPlugins.code-helper-nvim
     configuration
   ];
 

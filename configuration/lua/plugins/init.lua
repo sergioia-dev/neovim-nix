@@ -20,7 +20,6 @@ function M.setup()
 	require("plugins.cmp")
 	require("plugins.terminal")
 	require("plugins.marks")
-	require("plugins.base64")
 end
 
 M.setup()

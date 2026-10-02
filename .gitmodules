@@ -4,3 +4,6 @@
 [submodule "plugins/net_picker"]
 	path = plugins/net_picker
 	url = git@github.com:sergioia-dev/net_picker.git
+[submodule "plugins/code-helper"]
+	path = plugins/code-helper
+	url = git@github.com:sergioia-dev/code-helper-nvim.git
