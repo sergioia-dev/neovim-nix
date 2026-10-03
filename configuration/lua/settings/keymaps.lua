@@ -90,17 +90,19 @@ keymap(
 keymap(
 	{ "n", "t" },
 	'<C-w>"',
-	require("plugins.terminal").toggle_bottom_terminal,
+	require("toggable_term").toggle_bottom_terminal,
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
 keymap(
 	{ "n", "t" },
 	"<C-w>%",
-	require("plugins.terminal").toggle_right_terminal,
+	require("toggable_term").toggle_right_terminal,
 	{ desc = "Toggle Right Terminal", silent = true }
 )
 --
 keymap({ "n", "v" }, "<C-s>", "<cmd>w<CR>", { desc = "Save File", silent = true })
---
+
+keymap({ "t" }, "<Esc>", [[<C-\><C-n>]], { desc = "Escape terminal mode", silent = true })
+
 pcall(vim.keymap.del, "n", "<leader>co") -- Remove Lspsaga's mapping (missing mapping is fine)

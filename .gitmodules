@@ -7,3 +7,6 @@
 [submodule "plugins/code-helper"]
 	path = plugins/code-helper
 	url = git@github.com:sergioia-dev/code-helper-nvim.git
+[submodule "plugins/toggable-term"]
+	path = plugins/toggable-term
+	url = git@github.com:sergioia-dev/toggable-term-nvim.git

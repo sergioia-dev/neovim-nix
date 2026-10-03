@@ -91,7 +91,7 @@ function M.close_other_sidebars()
 	minifiles_close()
 
 	-- Close the terminal too, so only one sidebar is visible at a time
-	require("plugins.terminal").close_terminal()
+	require("toggable_term").close_terminal()
 end
 
 -- Called by <leader>fm. Toggles the mini.files explorer, following the same
@@ -117,7 +117,7 @@ end
 -- Closes mini.files if it is open, so only one database sidebar is visible at a time.
 function M.toggle_dadbod()
 	focus_non_terminal_window()
-	require("plugins.terminal").close_terminal()
+	require("toggable_term").close_terminal()
 
 	if is_dadbod_open() then
 		vim.cmd("DBUIToggle")

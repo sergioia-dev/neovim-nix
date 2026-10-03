@@ -18,8 +18,9 @@ function M.setup()
 	require("plugins.vimdadbod")
 	require("plugins.pi")
 	require("plugins.cmp")
-	require("plugins.terminal")
+	require("plugins.toggable-term")
 	require("plugins.marks")
+	require("plugins.fzf")
 end
 
 M.setup()

@@ -55,6 +55,7 @@ let
     vimPlugins.fzf-lua
     vimPlugins.net_picker
     vimPlugins.code-helper-nvim
+    vimPlugins.toggable-term-nvim
     configuration
   ];
 

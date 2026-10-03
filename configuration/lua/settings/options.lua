@@ -4,7 +4,6 @@ vim.opt.relativenumber = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.scrolloff = 999
-vim.opt.sidescrolloff = 999
 vim.opt.expandtab = true
 vim.opt.clipboard = "unnamed"
 vim.o.autoread = true
@@ -21,11 +20,3 @@ local config = {
 	severity_sort = true,
 }
 vim.diagnostic.config(config)
-
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = "netrw",
-	callback = function()
-		-- Disable F1 inside netrw
-		vim.keymap.set("n", "<F1>", "<Nop>", { remap = false, buffer = true })
-	end,
-})
