@@ -76,7 +76,7 @@ keymap("n", "<leader>gc", function()
 end, { desc = "Open a view with the git commits", silent = true })
 --
 -- -- Pi agent
-keymap({ "n", "v" }, "<Ctrl-w>p", "<cmd>Pi<CR>")
+keymap({ "n", "v" }, "<leader>a", "<cmd>Pi<CR>")
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
