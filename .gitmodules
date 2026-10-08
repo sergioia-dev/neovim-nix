@@ -10,3 +10,6 @@
 [submodule "plugins/toggable-term"]
 	path = plugins/toggable-term
 	url = git@github.com:sergioia-dev/toggable-term-nvim.git
+[submodule "plugins/vim-dadbod-manager"]
+	path = plugins/vim-dadbod-manager
+	url = git@github.com:sergioia-dev/vim-dadbod-manager.git

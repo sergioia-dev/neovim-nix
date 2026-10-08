@@ -21,6 +21,7 @@
           net_picker = final.callPackage ./derivations/net_picker { };
           code-helper-nvim = final.callPackage ./derivations/code-helper-nvim { };
           toggable-term-nvim = final.callPackage ./derivations/toggable-term-nvim { };
+          vim-dadbod-manager = final.callPackage ./derivations/vim-dadbod-manager { };
         };
       };
 

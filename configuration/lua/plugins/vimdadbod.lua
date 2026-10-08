@@ -23,3 +23,16 @@ if file then
 else
 	vim.notify("Connections file not found: " .. connections_file, vim.log.levels.WARN)
 end
+
+-- These connections are database servers, not single databases: vim-dadbod-manager
+-- renders each of them as a server node and lists the databases behind it as
+-- children of that node. The names must match the "name" fields in
+-- connections.json, and the scheme must support database discovery
+-- (sqlserver, mysql, mariadb, postgresql, ... -- see the plugin README).
+vim.g.dbui_multidb_masters = {
+	"Banco Production",
+	"Rama Production Dev",
+	"Rama Production QA",
+	"Banco Local SQLServer",
+	"Rama Local MySQL",
+}

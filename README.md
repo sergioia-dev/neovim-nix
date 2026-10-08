@@ -56,7 +56,7 @@ A custom Neovim configuration wrapped with Nix for easy installation and managem
 | ------------------ | ----------------- |
 | `:LazyGit`         | Git TUI           |
 | `:LazyDocker`      | Docker/Podman TUI |
-| `:DBUIToggle`      | Database browser  |
+| `:DBManagerToggle` | Database browser  |
 | `:FlutterRun`      | Run Flutter app   |
 | `:NvimTreeToggle`  | File explorer     |
 | `:MarkdownPreview` | Preview Markdown  |

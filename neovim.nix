@@ -34,9 +34,9 @@ let
     vimPlugins.catppuccin-nvim
     vimPlugins.conform-nvim
     vimPlugins.nvim-lint
-    vimPlugins.vim-dadbod-ui
     vimPlugins.vim-dadbod-completion
     vimPlugins.vim-dadbod
+    vimPlugins.vim-dadbod-manager
     vimPlugins.todo-comments-nvim
     vimPlugins.nvim-treesitter.withAllGrammars
     vimPlugins.nui-nvim

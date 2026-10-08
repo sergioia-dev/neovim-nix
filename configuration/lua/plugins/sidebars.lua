@@ -85,7 +85,7 @@ function M.close_other_sidebars()
 	focus_non_terminal_window()
 
 	if is_dadbod_open() then
-		vim.cmd("DBUIToggle")
+		vim.cmd("DBManagerToggle")
 	end
 
 	minifiles_close()
@@ -120,7 +120,7 @@ function M.toggle_dadbod()
 	require("toggable_term").close_terminal()
 
 	if is_dadbod_open() then
-		vim.cmd("DBUIToggle")
+		vim.cmd("DBManagerToggle")
 		return
 	end
 
@@ -132,7 +132,7 @@ function M.toggle_dadbod()
 	-- Close mini.files only now (never open it) so DBUI is the only sidebar
 	minifiles_close()
 
-	vim.cmd("DBUIToggle")
+	vim.cmd("DBManagerToggle")
 end
 
 return M
