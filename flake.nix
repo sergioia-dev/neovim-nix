@@ -16,6 +16,10 @@
       lib = nixpkgs.lib;
 
       pluginDerivationsOverlay = final: prev: {
+        # Not a Vim plugin: a standalone TUI database client, used alongside
+        # the vim-dadbod setup described in the README.
+        dbtui = final.callPackage ./derivations/dbtui { };
+
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           net_picker = final.callPackage ./derivations/net_picker { };
@@ -82,6 +86,8 @@
             runtimeDependencies = LSPs ++ formatters ++ pluginDependencies;
             inherit pkgs-unstable;
           };
+
+          dbtui = pkgs.dbtui;
 
         }
       );

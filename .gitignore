@@ -4,4 +4,5 @@ AGENTS.md
 .env
 .grip/
 graphify-out/
+docker-compose.yml
 

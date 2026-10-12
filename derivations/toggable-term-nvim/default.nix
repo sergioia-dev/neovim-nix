@@ -18,8 +18,9 @@ vimUtils.buildVimPlugin {
   src = fetchFromGitHub {
     owner = "sergioia-dev";
     repo = "toggable-term-nvim";
-    rev = "713633355ced060f5337e6ce5271db67367bbf16";
-    sha256 = "sha256-Bs3elJzzzi1WiqwP0TnXEkUdwjizO2OckaNBTX6iGRM=";
+    rev = "main";
+    # sha256 = lib.fakeHash;
+    sha256 = "sha256-Maco2xfRvwxCXHAZQ3bMdCbqhhOBHd+92tegEvgdrg0=";
   };
   meta.description = "Focus-aware vertical, horizontal and floating terminal sidebars for Neovim";
   doCheck = false;

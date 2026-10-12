@@ -18,10 +18,10 @@ vimUtils.buildVimPlugin {
   version = "0.1.0";
   src = fetchFromGitHub {
     owner = "sergioia-dev";
-    repo = "vim-dadbod-manager";
-    rev = "dev";
+    repo = "vim-dadbod-manager-ui";
+    rev = "main";
     # sha256 = lib.fakeHash;
-    sha256 = "sha256-TZh/jf/9QoDYpI7ljHq3oTjzhSbjQjlcDEwQJGgHDJA=";
+    sha256 = "sha256-pqLM7r4q7QYrc+OkOAH2gGPN3AJheabscYsbddqSe5g=";
   };
   meta.description = "Server -> databases -> tables tree for vim-dadbod-ui connections";
   doCheck = false;

@@ -1,65 +1,202 @@
 # Nix-Wrapped Neovim Configuration
 
-A custom Neovim configuration wrapped with Nix for easy installation and management.
+A personal Neovim configuration wrapped with Nix and pinned to `nixos-26.05`.
+Language servers, formatters and CLI tools are packaged by the flake, the Lua
+configuration uses the built-in `vim.lsp.config` / `vim.lsp.enable` API, and the
+whole setup is wired together as a single `neovim-custom` derivation.
 
 ## Features
 
 ### Coding
 
-| Languages Available     | Formatter |
-| ----------------------- | --------- |
-| TypeScript / JavaScript | ✔️        |
-| Python                  | ✔️        |
-| Rust                    | ✔️        |
-| Java                    | ✔️        |
-| Lua                     | ✔️        |
-| Nix                     | ✔️        |
-| Dart / Flutter          | ✔️        |
-| Bash                    | ✔️        |
-| JSON                    | ✔️        |
-| YAML                    | ✔️        |
-| CSS                     | ✔️        |
-| Markdown                | ✔️        |
-| SQL                     | ✔️        |
+| Language | Language server | Enabled when |
+| --- | --- | --- |
+| TypeScript / JavaScript | `tsgo` | `node`, `bun` or `deno` is on `PATH` |
+| Lua | `lua-language-server` | `lua` or `luajit` is on `PATH` |
+| Nix | `nixd` | `nixd` is on `PATH` |
+| Java | `jdtls` | `JAVA_HOME` is set (`LOMBOK_JAR` adds the javaagent) |
+| Dart / Flutter | `flutter-tools` defaults | always |
+| Bash / Shell | `bash-language-server` | always |
+| HTML / CSS / JSON | `html`, `cssls`, `jsonls` | always |
+
+Python and Rust have no language server configured.
+
+The Nix LSP options point at the author's own flake, so
+`configuration/lua/lsp/nix.lua` has to be adjusted for another system.
+
+### Formatting
+
+Formatting runs on save through `conform.nvim`:
+
+| Language | Formatter |
+| --- | --- |
+| Lua | `stylua` |
+| JavaScript / TypeScript / JSX / TSX | `biome` |
+| HTML | `biome` |
+| JSON / JSONC | `biome` |
+| CSS | `biome` |
+| GraphQL | `biome` |
+| Nix | `nixfmt` |
+| Bash / Shell | `shfmt` |
+| SQL | `sql-formatter` |
+| HTTP / REST | `kulala-fmt` |
+
+Python, Rust, Java, Dart/Flutter and Markdown are not formatted.
+
+### Linting
+
+`nvim-lint` runs `biome` on JavaScript, TypeScript, JSX and TSX, and the `nix`
+linter from `vscode-langservers-extracted` on Nix files.
+
+### Completion
+
+`nvim-cmp` completes from `nvim_lsp`, `luasnip`, `path`, `buffer` and
+`vim-dadbod-completion`, with `lspkind` icons and bordered documentation
+windows. Snippets come from `LuaSnip` plus `friendly-snippets` (VSCode snippet
+packs), with `html` snippets extended into `typescriptreact` and
+`javascriptreact`.
+
+| Key | Action |
+| --- | --- |
+| `<C-Space>` | Trigger completion |
+| `<C-n>` / `<C-p>` | Next / previous item |
+| `<C-f>` / `<C-b>` | Scroll documentation |
+| `<CR>` | Confirm |
+| `<Esc>` | Abort |
 
 ### Git
 
-- Stage, commit, branch, and view history without leaving Neovim
-- Inline diff markers showing added/changed/deleted lines
-- View who last modified each line (blame)
-
-### Docker
-
-- Manage containers directly from Neovim
-- View and manage images, volumes, and networks
-- Works with both Docker and Podman
+- Neogit for staging, committing, branching and history (`:Neogit kind=replace`)
+- gitsigns for inline diff signs, staged signs and toggleable line blame
+- fzf-lua pickers for branches and commits
 
 ### Databases
 
-- Connect to PostgreSQL, MongoDB, MySQL, SQLite, Redis, Big Query, ClickHouse, DuckDB, Impala, jq, MariaDB, Oracle, osquery, Presto, Snowflake and SQL Server
-- Execute queries and browse results
-- Save connections for quick access
+- vim-dadbod with vim-dadbod-manager's server → databases → tables tree
+- Supports BigQuery, ClickHouse, DuckDB, Impala, MongoDB, MySQL, MariaDB,
+  Oracle, osquery, PostgreSQL, Presto, Redis, Snowflake, SQL Server and SQLite
+- Connections and their credentials are stored in
+  `~/.cache/nvim-custom/vim-dadbod-manager/connections.json`
+- If none of those clients is on `PATH` the sidebar reports a warning instead of
+  opening
 
 ### REST APIs
 
-- Test HTTP endpoints directly in Neovim
-- Create requests in `.http` or `.rest` files
+- Test HTTP endpoints inside Neovim with `kulala-nvim`
+- Requests live in `.http` or `.rest` files and open in a float, with the
+  plugin's global keymaps enabled
+- Requests are formatted on save with `kulala-fmt`
 
 ### Markdown
 
-- Write and preview Markdown directly in Neovim
-- Live preview with `:MarkdownPreview` command
+`render-markdown.nvim` renders Markdown inside the buffer (LaTeX is disabled).
+
+### Terminals
+
+`toggable-term-nvim` provides right and bottom terminals that close when they
+lose focus. The terminal buffer is cached, so the shell session and scrollback
+survive and the next toggle restores the same terminal. Only one sidebar —
+terminal, database tree or file explorer — is visible at a time.
+
+### AI agent
+
+`pi-nvim` bridges the `pi` coding agent into Neovim. The vertical terminal
+starts `pi` in the background, and `<leader>a` opens `:Pi`.
+
+### Editor niceties
+
+catppuccin-mocha theme, lualine (macro-recording indicator and SSH badge),
+which-key, noice + notify, nvim-autopairs, todo-comments, marks.nvim,
+mini.files (replaces netrw; deletion moves files to trash instead of removing
+them), smear-cursor.
+
+## Custom plugins
+
+These plugins are developed alongside this configuration and are packaged by the
+flake:
+
+| Plugin | What it does |
+| --- | --- |
+| [`net_picker`](https://github.com/sergioia-dev/net_picker) | Picks a listening process or container and kills, signals, tails, restarts, debugs, yanks or jumps to it. Uses the fzf-lua backend here; containers are read over the podman/docker REST socket, falling back to `/proc` |
+| [`code-helper-nvim`](https://github.com/sergioia-dev/code-helper-nvim) | `:ConBase64Encode`, `:ConBase64Decode`, `:ConURLEncode`, `:ConURLDecode` and `:GenSecret` conversions |
+| [`toggable-term-nvim`](https://github.com/sergioia-dev/toggable-term-nvim) | Focus-aware vertical, horizontal and floating terminal sidebars |
+| [`pi-nvim`](https://github.com/carderne/pi-nvim) | Bridge between the `pi` coding agent and Neovim |
+| [`vim-dadbod-manager`](https://github.com/sergioia-dev/vim-dadbod-manager-ui) | Server → databases → tables tree for dadbod-ui connections |
+| [`dbtui`](https://github.com/Di3go0-0/dbtui) | Standalone Rust TUI database client (PostgreSQL, MySQL, SQL Server, Oracle) with encrypted saved connections. Shipped as `.#dbtui`, not part of the Neovim package |
+
+`net_picker` keymaps: `Tab` multi-select, `Enter`/`C-k` kill, `C-s` signal,
+`C-t` tail log, `C-r` restart, `C-d` debugger, `C-o` cd, `C-y` yank, `C-g` jump
+to source.
 
 ## Quick Commands
 
-| Command            | Action            |
-| ------------------ | ----------------- |
-| `:LazyGit`         | Git TUI           |
-| `:LazyDocker`      | Docker/Podman TUI |
-| `:DBManagerToggle` | Database browser  |
-| `:FlutterRun`      | Run Flutter app   |
-| `:NvimTreeToggle`  | File explorer     |
-| `:MarkdownPreview` | Preview Markdown  |
+| Command | Action |
+| --- | --- |
+| `:Neogit` | Git TUI |
+| `<F1>` / `:DBManagerToggle` | Database browser |
+| `<leader>fm` | File explorer (mini.files) |
+| `<leader>fn` | Network/process picker |
+| `<leader>ff` | Find files |
+| `<C-w>%` / `<C-w>"` | Right / bottom terminal |
+| `:FlutterRun` | Run the Flutter app |
+| `:ConBase64Encode` | Base64-encode the selection |
+
+## Keymaps
+
+The leader key is `<Space>`.
+
+### Find and navigate
+
+| Key | Action |
+| --- | --- |
+| `<leader>ff` | Find files |
+| `<leader>fa` | Live grep |
+| `<leader><Tab>` | Open buffers |
+| `<leader>fi` | Grep inside the current file |
+| `<leader>fc` | Todo comments |
+| `<leader>fn` | Network/process picker |
+| `<leader>m` | Marks |
+
+### LSP
+
+| Key | Action |
+| --- | --- |
+| `<leader>lr` | References and implementations (Lspsaga finder) |
+| `<leader>lR` | Rename |
+| `K` | Hover documentation |
+| `<leader>lo` | Outline |
+| `<leader>lf` | Find functions and variables (treesitter) |
+| `<leader>la` | Code action |
+| `<leader>le` | Workspace diagnostics |
+| `<leader>lq` | Quickfix list |
+| `<leader>ls` | Diagnostic float for the current line |
+| `<leader>li` | Implementations |
+
+### Git
+
+| Key | Action |
+| --- | --- |
+| `<leader>gg` | Neogit |
+| `<leader>glb` | Toggle inline blame |
+| `<leader>gb` | Branches |
+| `<leader>gc` | Commits |
+
+### Sidebars and terminals
+
+| Key | Action |
+| --- | --- |
+| `<F1>` | Toggle the database browser |
+| `<leader>fm` | Toggle the mini.files explorer |
+| `<C-w>"` | Toggle the bottom terminal |
+| `<C-w>%` | Toggle the right terminal |
+
+### Editing
+
+| Key | Action |
+| --- | --- |
+| `<leader>a` | Open the `pi` agent |
+| `<C-s>` | Save the file |
+| `<Esc>` | Leave terminal mode |
 
 ## Prerequisites
 
@@ -73,7 +210,7 @@ A custom Neovim configuration wrapped with Nix for easy installation and managem
 Install directly from GitHub:
 
 ```bash
-nix profile add github:sergioia-dev/Nix-Neovim
+nix profile add github:sergioia-dev/neovim-nix
 ```
 
 Or install locally after cloning:
@@ -87,13 +224,13 @@ nix profile add .
 Test without installing:
 
 ```bash
-nix run github:sergioia-dev/Nix-Neovim
+nix run github:sergioia-dev/neovim-nix
 ```
 
 Build the package:
 
 ```bash
-nix build github:sergioia-dev/Nix-Neovim
+nix build github:sergioia-dev/neovim-nix
 ```
 
 ## Home Manager Integration
@@ -102,7 +239,7 @@ This flake does not currently ship a Home Manager module. You can add the packag
 
 ```nix
 { inputs, ... }: {
-  home.packages = [ inputs.neovim.packages.${pkgs.system}.default ];
+  home.packages = [ inputs.neovim-nix.packages.${pkgs.system}.default ];
 }
 ```
 
@@ -112,7 +249,7 @@ This flake does not currently ship a NixOS module. You can add the package to `e
 
 ```nix
 { inputs, ... }: {
-  environment.systemPackages = [ inputs.neovim.packages.${pkgs.system}.default ];
+  environment.systemPackages = [ inputs.neovim-nix.packages.${pkgs.system}.default ];
 }
 ```
 
@@ -124,12 +261,30 @@ Run Neovim:
 nvim
 ```
 
-## Documentation
+The wrapper launches Neovim with `NVIM_APPNAME=nvim-custom`, prepends the
+flake's language servers, formatters and CLI tools (`ripgrep`, `git`, `lldb`,
+`jq`, `lsof`, `tree-sitter-cli`, `jsregexp`, `fzf`) to `PATH`, and loads the
+configuration from the packaged `pack/custom/start` instead of
+`~/.config/nvim`. Plugin state and caches therefore live under
+`~/.cache/nvim-custom/` and `~/.local/share/nvim-custom/`.
 
-| Question                         | Answer                               |
-| -------------------------------- | ------------------------------------ |
-| What languages are supported?    | [docs/coding.md](docs/coding.md)     |
-| What plugins are installed?      | [docs/plugins.md](docs/plugins.md)   |
-| What are the keyboard shortcuts? | [docs/keymaps.md](docs/keymaps.md)   |
-| How to connect to a database?    | [docs/database.md](docs/database.md) |
-| How to test REST APIs?           | [docs/rest.md](docs/rest.md)         |
+## Local Plugin Edits
+
+The custom plugins live in this repository as git submodules. When you build a
+local checkout with `nix build "path:$PWD"`, the flake copies the *committed*
+state of each submodule, not your working tree, so uncommitted local edits are
+invisible to the build. The exported store path also contains the exact
+revision that was copied, which is why the build prints a trace message naming
+it.
+
+The submodules are:
+
+- `plugins/project-tree`
+- `plugins/net_picker`
+- `plugins/code-helper`
+- `plugins/toggable-term`
+- `plugins/vim-dadbod-manager`
+
+To pick up local plugin edits, commit and push them in the submodule, then bump
+the matching `rev` (and, if it changed, `sha256`) in `flake.nix` before
+rebuilding.
