@@ -123,6 +123,7 @@ flake:
 | [`pi-nvim`](https://github.com/carderne/pi-nvim) | Bridge between the `pi` coding agent and Neovim |
 | [`vim-dadbod-manager`](https://github.com/sergioia-dev/vim-dadbod-manager-ui) | Server → databases → tables tree for dadbod-ui connections |
 | [`dbtui`](https://github.com/Di3go0-0/dbtui) | Standalone Rust TUI database client (PostgreSQL, MySQL, SQL Server, Oracle) with encrypted saved connections. Shipped as `.#dbtui`, not part of the Neovim package |
+| [`sql-mer-tui`](https://github.com/sergioia-dev/sql-mer-tui) | Keyboard-driven terminal ER diagram (`sqlv`), opened from the vim-dadbod-manager drawer's **Schema viewer** action. Shipped as `.#sql-mer-tui` and put on the Neovim wrapper's `PATH` |
 
 `net_picker` keymaps: `Tab` multi-select, `Enter`/`C-k` kill, `C-s` signal,
 `C-t` tail log, `C-r` restart, `C-d` debugger, `C-o` cd, `C-y` yank, `C-g` jump

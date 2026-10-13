@@ -8,11 +8,11 @@ require("toggable_term").setup({
 
 	-- Start a program in a terminal the first time it is created, then reuse that
 	-- session on every later toggle:
-	vertical_init = "pi",
+	-- vertical_init = "pi",
 	-- Start it in the background instead, when the plugin is set up: the terminal
 	-- is created hidden and `pi` is already running when it is first toggled, so
 	-- the window opens on the program instead of a fresh shell:
-	vertical_background_init = true,
+	-- vertical_background_init = true,
 	-- horizontal_init = nil,
 	-- float_init = nil,
 

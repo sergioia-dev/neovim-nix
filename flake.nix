@@ -20,6 +20,10 @@
         # the vim-dadbod setup described in the README.
         dbtui = final.callPackage ./derivations/dbtui { };
 
+        # Optional companion for the vim-dadbod-manager drawer: the
+        # `sqlv` ER-diagram TUI, opened from the "Schema viewer" entry.
+        sql-mer-tui = final.callPackage ./derivations/sql-mer-tui { };
+
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           net_picker = final.callPackage ./derivations/net_picker { };
@@ -74,6 +78,8 @@
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
             fzf
+            # sqlv, the "Schema viewer" backend in the vim-dadbod-manager drawer
+            sql-mer-tui
           ];
 
         in
@@ -88,6 +94,8 @@
           };
 
           dbtui = pkgs.dbtui;
+
+          sql-mer-tui = pkgs.sql-mer-tui;
 
         }
       );
