@@ -16,19 +16,17 @@
       lib = nixpkgs.lib;
 
       pluginDerivationsOverlay = final: prev: {
-        # Not a Vim plugin: a standalone TUI database client, used alongside
-        # the vim-dadbod setup described in the README.
-        dbtui = final.callPackage ./derivations/dbtui { };
 
         # Optional companion for the vim-dadbod-manager drawer: the
         # `sqlv` ER-diagram TUI, opened from the "Schema viewer" entry.
-        sql-mer-tui = final.callPackage ./derivations/sql-mer-tui { };
+        sqlv = final.callPackage ./derivations/sql-mer-tui { };
 
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
           net_picker = final.callPackage ./derivations/net_picker { };
           code-helper-nvim = final.callPackage ./derivations/code-helper-nvim { };
           toggable-term-nvim = final.callPackage ./derivations/toggable-term-nvim { };
+          taskwarrior-nvim = final.callPackage ./derivations/taskwarrior-nvim { };
           vim-dadbod-manager = final.callPackage ./derivations/vim-dadbod-manager { };
         };
       };
@@ -78,8 +76,8 @@
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
             fzf
-            # sqlv, the "Schema viewer" backend in the vim-dadbod-manager drawer
-            sql-mer-tui
+            sqlv # sqlv, the "Schema viewer" backend in the vim-dadbod-manager drawer
+            taskwarrior3
           ];
 
         in
@@ -92,11 +90,6 @@
             runtimeDependencies = LSPs ++ formatters ++ pluginDependencies;
             inherit pkgs-unstable;
           };
-
-          dbtui = pkgs.dbtui;
-
-          sql-mer-tui = pkgs.sql-mer-tui;
-
         }
       );
 

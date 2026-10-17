@@ -76,7 +76,7 @@ keymap("n", "<leader>gc", function()
 end, { desc = "Open a view with the git commits", silent = true })
 --
 -- -- Pi agent
-keymap({ "n", "v" }, "<leader>a", "<cmd>Pi<CR>")
+keymap({ "n", "v" }, "<C-w>p", "<cmd>Pi<CR>")
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
@@ -94,6 +94,8 @@ keymap(
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
+keymap({ "n", "t" }, "<C-w>m", "<cmd>TermFloat<CR>", { desc = "Toggle Float Terminal", silent = true })
+
 keymap(
 	{ "n", "t" },
 	"<C-w>%",
@@ -103,6 +105,6 @@ keymap(
 --
 keymap({ "n", "v" }, "<C-s>", "<cmd>w<CR>", { desc = "Save File", silent = true })
 
-keymap({ "t" }, "<Esc>", [[<C-\><C-n>]], { desc = "Escape terminal mode", silent = true })
+keymap({ "t" }, "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Escape terminal mode", silent = true })
 
 pcall(vim.keymap.del, "n", "<leader>co") -- Remove Lspsaga's mapping (missing mapping is fine)

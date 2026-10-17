@@ -20,7 +20,7 @@ vimUtils.buildVimPlugin {
     repo = "toggable-term-nvim";
     rev = "main";
     # sha256 = lib.fakeHash;
-    sha256 = "sha256-Maco2xfRvwxCXHAZQ3bMdCbqhhOBHd+92tegEvgdrg0=";
+    sha256 = "sha256-9vz/PO+ab1UzQ2DUo1MH/OwVYvWdUlYvbCMpF4q/kuo=";
   };
   meta.description = "Focus-aware vertical, horizontal and floating terminal sidebars for Neovim";
   doCheck = false;

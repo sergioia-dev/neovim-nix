@@ -19,6 +19,7 @@ function M.setup()
 	require("plugins.pi")
 	require("plugins.cmp")
 	require("plugins.toggable-term")
+	require("plugins.taskwarrior")
 	require("plugins.marks")
 	require("plugins.fzf")
 end

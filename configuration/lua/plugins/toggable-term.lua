@@ -1,28 +1,31 @@
 -- Terminal sidebars (right: <C-w>%, bottom: <C-w>").
 --
--- A terminal closes as soon as it loses focus, but its buffer is cached, so the
--- shell session and its scrollback survive and the next toggle restores the same
--- terminal.
+-- Every terminal kind closes as soon as it loses focus, but its buffer is cached,
+-- so the shell session and its scrollback survive and the next toggle restores
+-- the same terminal. Turn that off for one kind with, for example,
+-- `float_close_on_focus_loss = false` (and `:TermFocusClose float off` at runtime).
 require("toggable_term").setup({
-	close_on_focus_loss = true,
 
 	-- Start a program in a terminal the first time it is created, then reuse that
 	-- session on every later toggle:
-	-- vertical_init = "pi",
+	vertical_init = "pi",
 	-- Start it in the background instead, when the plugin is set up: the terminal
 	-- is created hidden and `pi` is already running when it is first toggled, so
 	-- the window opens on the program instead of a fresh shell:
 	-- vertical_background_init = true,
 	-- horizontal_init = nil,
-	-- float_init = nil,
+	float_init = "matui",
 
 	-- Size of a terminal: a number of cells, or a share of the editor as
 	-- "30%". These win over the ratio options (width_ratio, height_ratio,
 	-- float_width_ratio, float_height_ratio), which stay the fallback:
 	-- vertical_size = 30, -- 30 columns wide
 	-- horizontal_size = 30, -- 30 lines tall
-	-- float_width = 50, -- 50 columns wide
+	float_width = 90, -- 50 columns wide
 	-- float_height = 50, -- 50 lines tall
+	vertical_close_on_focus_loss = true,
+	horizontal_close_on_focus_loss = true,
+	float_close_on_focus_loss = true,
 
 	-- Line numbers inside a terminal window are explicit and off by default.
 	-- `true` shows 'number' / 'relativenumber' in that kind's window, `false`
