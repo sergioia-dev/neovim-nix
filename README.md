@@ -100,8 +100,9 @@ terminal, database tree or file explorer — is visible at a time.
 
 ### AI agent
 
-`pi-nvim` bridges the `pi` coding agent into Neovim. The vertical terminal
-starts `pi` in the background, and `<leader>a` opens `:Pi`.
+`pi-nvim` bridges the `pi` coding agent into Neovim. `<leader>a` toggles a
+vertical terminal that starts `pi` lazily on the first toggle, and `<leader>p`
+opens the `:Pi` dialog that sends a prompt (or the visual selection) to it.
 
 ### Editor niceties
 
@@ -190,12 +191,13 @@ The leader key is `<Space>`.
 | `<leader>fm` | Toggle the mini.files explorer |
 | `<C-w>"` | Toggle the bottom terminal |
 | `<C-w>%` | Toggle the right terminal |
+| `<leader>a` | Toggle the `pi` terminal |
+| `<leader>p` | Open the `:Pi` prompt dialog |
 
 ### Editing
 
 | Key | Action |
 | --- | --- |
-| `<leader>a` | Open the `pi` agent |
 | `<C-s>` | Save the file |
 | `<Esc>` | Leave terminal mode |
 
