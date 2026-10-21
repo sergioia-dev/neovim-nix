@@ -104,6 +104,11 @@ terminal, database tree or file explorer — is visible at a time.
 vertical terminal that starts `pi` lazily on the first toggle, and `<leader>p`
 opens the `:Pi` dialog that sends a prompt (or the visual selection) to it.
 
+`:Pi <text>` skips the dialog and sends the text as typed, so slash commands work
+from the command line: `:Pi /skill:graphify` is expanded by `pi` instead of being
+prompted, while built-ins such as `:Pi /settings` are typed into the `pi`
+terminal (they only exist in its TUI, so one has to be open).
+
 ### Editor niceties
 
 catppuccin-mocha theme, lualine (macro-recording indicator and SSH badge),
@@ -192,7 +197,7 @@ The leader key is `<Space>`.
 | `<C-w>"` | Toggle the bottom terminal |
 | `<C-w>%` | Toggle the right terminal |
 | `<leader>a` | Toggle the `pi` terminal |
-| `<leader>p` | Open the `:Pi` prompt dialog |
+| `<leader>p` | Open the `:Pi` prompt dialog (`:Pi <text>` sends directly) |
 
 ### Editing
 

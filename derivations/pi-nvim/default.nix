@@ -11,19 +11,20 @@
 #     "https://github.com/sergioia-dev/pi-nvim/archive/<rev>.tar.gz"
 #   nix hash convert --to sri --hash-algo sha256 <base32 hash>
 #
-# Version skew to keep in mind: this is the Neovim side of the bridge
-# (package.json 0.2.6 here), while `pi` loads its own copy from npm
-# (`npm:pi-nvim`). The two halves talk over a newline-delimited JSON socket,
-# and the peer range in package.json (`^0.87.0`) is wider than the `pi`
-# 0.86.1 this flake ships; the protocol used here is unchanged since 0.2.5.
+# Version skew to keep in mind: `pi` loads this same checkout as a local
+# extension (see pi-nix: `extraExtensions = [ ".../neovim-nix/plugins/pi" ]`),
+# so the two halves of the bridge are the same commit. That replaced the
+# published `npm:pi-nvim@0.2.5`, which dropped the per-message options and so
+# never honoured `expandPromptTemplates`.
 vimUtils.buildVimPlugin {
   pname = "pi-nvim";
   version = "v0.2.6";
   src = fetchFromGitHub {
     owner = "sergioia-dev";
     repo = "pi-nvim";
-    rev = "2d3b23b3f1105ea08c6caef57c722c6734d647c4";
-    sha256 = "sha256-SCq2PyhTLXg4dLGd30mZYZHhqOuieUtcBgo6Fd6z88I=";
+    rev = "ecd6b71c9a70331e58f25da9be871fb75ed35bde";
+    # sha256 = lib.fakeHash;
+    sha256 = "sha256-9TB3/ZDls16jB/ay9QW6EjjyqLnc3JEhHhEtMMi7hpo=";
   };
   meta.description = "Bridge between pi coding agent and Neovim";
 }
