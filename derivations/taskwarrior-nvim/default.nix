@@ -18,7 +18,7 @@ vimUtils.buildVimPlugin {
     repo = "taskwarrior-nvim";
     rev = "main";
     # sha256 = lib.fakeHash;
-    sha256 = "sha256-RvIMsipuqQQ2/RfnQSqMrrtqjl5j449Onyq0DsvFwOg=";
+    sha256 = "sha256-7lJHtZ9LlDzDVpIHtnuQVZdWBYH2mwJywl7hBjIvbOg=";
   };
 
   meta.description = "Taskwarrior reports in a bottom split, commands headless";

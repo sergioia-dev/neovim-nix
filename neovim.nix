@@ -22,7 +22,7 @@ let
     vimPlugins.which-key-nvim
     vimPlugins.gitsigns-nvim
     vimPlugins.render-markdown-nvim
-    # vimPlugins.nvim-lspconfig
+    vimPlugins.nvim-lspconfig
     vimPlugins.nvim-cmp
     vimPlugins.cmp-nvim-lsp
     vimPlugins.cmp_luasnip
@@ -57,6 +57,7 @@ let
     vimPlugins.code-helper-nvim
     vimPlugins.toggable-term-nvim
     vimPlugins.taskwarrior-nvim
+    vimPlugins.vim-fugitive
     configuration
   ];
 

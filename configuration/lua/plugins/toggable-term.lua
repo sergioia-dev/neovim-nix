@@ -14,14 +14,14 @@ require("toggable_term").setup({
 	-- the window opens on the program instead of a fresh shell:
 	-- vertical_background_init = true,
 	-- horizontal_init = nil,
-	float_init = "matui",
+	-- float_init = nil,
 
 	-- Size of a terminal: a number of cells, or a share of the editor as
 	-- "30%". These win over the ratio options (width_ratio, height_ratio,
 	-- float_width_ratio, float_height_ratio), which stay the fallback:
 	-- vertical_size = 30, -- 30 columns wide
 	-- horizontal_size = 30, -- 30 lines tall
-	float_width = 90, -- 50 columns wide
+	-- float_width = 90, -- 50 columns wide
 	-- float_height = 50, -- 50 lines tall
 	vertical_close_on_focus_loss = true,
 	horizontal_close_on_focus_loss = true,
