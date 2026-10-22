@@ -12,7 +12,7 @@
 #   nix hash convert --to sri --hash-algo sha256 <base32 hash>
 #
 # Version skew to keep in mind: `pi` loads this same checkout as a local
-# extension (see pi-nix: `extraExtensions = [ ".../neovim-nix/plugins/pi" ]`),
+# extension (see pi-nix: `extraExtensions = [ ".../neovim-nix/plugins/pi-nvim" ]`),
 # so the two halves of the bridge are the same commit. That replaced the
 # published `npm:pi-nvim@0.2.5`, which dropped the per-message options and so
 # never honoured `expandPromptTemplates`.

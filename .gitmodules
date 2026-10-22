@@ -16,6 +16,6 @@
 [submodule "plugins/taskwarrior"]
 	path = plugins/taskwarrior
 	url = git@github.com:sergioia-dev/taskwarrior-nvim.git
-[submodule "plugins/pi"]
-	path = plugins/pi
+[submodule "plugins/pi-nvim"]
+	path = plugins/pi-nvim
 	url = git@github.com:sergioia-dev/pi-nvim.git
