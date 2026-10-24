@@ -1,5 +1,6 @@
 local config = require("pr.config")
 local detect = require("pr.detect")
+local git = require("pr.git")
 local providers = require("pr.providers")
 local ui = require("pr.ui")
 
@@ -14,7 +15,7 @@ local SUBCOMMANDS = { "create", "list", "view", "checkout", "open", "merge", "pr
 
 --- Flags each subcommand understands, for `:PR` completion and parsing.
 local SUBCOMMAND_FLAGS = {
-	create = { "--title", "--body", "--base", "--reviewers", "--draft" },
+	create = { "--title", "--body", "--head", "--base", "--reviewers", "--draft" },
 	list = { "--state", "--author", "--limit" },
 	merge = { "--method", "--delete-branch" },
 	view = {},
@@ -28,6 +29,7 @@ local VALUED_FLAGS = {
 	title = true,
 	body = true,
 	base = true,
+	head = true,
 	reviewers = true,
 	source = true,
 	state = true,
@@ -106,24 +108,43 @@ function M.current_provider()
 	return name
 end
 
---- `:PR create` — Markdown draft, then `:w` + confirmation.
----@param opts table|nil { title, body, base, draft, reviewers }
+--- `:PR create` — Markdown draft, then `<C-c><C-c>` submits it.
+---@param opts table|nil { title, body, head, base, draft, reviewers }
 function M.create(opts)
 	opts = opts or {}
 	local resolved = provider()
 	if not resolved then
 		return
 	end
-	ui.create(opts, function(fields)
-		local payload = vim.tbl_extend("force", opts, {
+	local head = (opts.head and opts.head ~= "") and opts.head or git.current_branch()
+	local base = opts.base
+	if not base or base == "" then
+		base = config.get().default_base
+	end
+	if not base or base == "" then
+		base = git.default_branch()
+	end
+	ui.create({
+		title = opts.title,
+		body = opts.body,
+		head = head,
+		base = base,
+		reviewers = opts.reviewers,
+		provider = resolved,
+	}, function(fields)
+		resolved.create({
 			title = fields.title,
 			body = fields.body,
-		})
-		resolved.create(payload, function(err, url)
+			source = fields.head,
+			base = fields.base,
+			draft = opts.draft,
+			reviewers = fields.reviewers or opts.reviewers,
+		}, function(err, url)
 			if err then
 				return notify_error(err)
 			end
-			local message = url and ("pull request created: " .. url) or "pull request created"
+			local message = url and ("pull request created: %s (:PR open to view it)"):format(url)
+				or "pull request created"
 			vim.notify("nvim-pr: " .. message, vim.log.levels.INFO)
 		end)
 	end)

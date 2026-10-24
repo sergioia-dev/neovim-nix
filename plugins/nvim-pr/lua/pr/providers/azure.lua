@@ -203,4 +203,36 @@ function M.open_browser(id, cb)
 	end)
 end
 
+--- Organization users, used as candidates for the `br` reviewer picker.
+---@param cb fun(err?: string, handles?: string[])
+function M.list_reviewers(cb)
+	local args = {
+		"devops",
+		"user",
+		"list",
+		"--query",
+		"members[].user.uniqueName",
+		"--output",
+		"json",
+	}
+	vim.list_extend(args, context_args())
+	run(args, {}, function(err, stdout)
+		if err then
+			return cb(err)
+		end
+		local data, decode_err = base.decode(stdout)
+		if not data then
+			return cb(decode_err)
+		end
+		local handles = {}
+		for _, handle in ipairs(data) do
+			if type(handle) == "string" and handle ~= "" and not vim.tbl_contains(handles, handle) then
+				handles[#handles + 1] = handle
+			end
+		end
+		table.sort(handles)
+		cb(nil, handles)
+	end)
+end
+
 return M

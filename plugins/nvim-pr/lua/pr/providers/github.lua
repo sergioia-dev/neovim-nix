@@ -156,4 +156,27 @@ function M.open_browser(id, cb)
 	end)
 end
 
+--- Collaborators' logins, used as candidates for the `br` reviewer picker.
+---@param cb fun(err?: string, handles?: string[])
+function M.list_reviewers(cb)
+	base.run(
+		{ M.cli, "api", "repos/{owner}/{repo}/collaborators", "--paginate", "--jq", ".[].login" },
+		{},
+		function(err, stdout)
+			if err then
+				return cb(err)
+			end
+			local handles = {}
+			for line in stdout:gmatch("[^\r\n]+") do
+				local handle = vim.trim(line)
+				if handle ~= "" and not vim.tbl_contains(handles, handle) then
+					handles[#handles + 1] = handle
+				end
+			end
+			table.sort(handles)
+			cb(nil, handles)
+		end
+	)
+end
+
 return M

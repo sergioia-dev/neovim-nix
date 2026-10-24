@@ -131,4 +131,22 @@ function M.open_browser(id, cb)
 	end)
 end
 
+--- Project members' usernames, used as candidates for the `br` reviewer picker.
+---@param cb fun(err?: string, handles?: string[])
+function M.list_reviewers(cb)
+	base.run({ M.cli, "api", "projects/:id/members/all?per_page=100" }, {}, function(err, stdout)
+		if err then
+			return cb(err)
+		end
+		local handles = {}
+		for username in stdout:gmatch('"username"%s*:%s*"([^"]+)"') do
+			if not vim.tbl_contains(handles, username) then
+				handles[#handles + 1] = username
+			end
+		end
+		table.sort(handles)
+		cb(nil, handles)
+	end)
+end
+
 return M

@@ -32,6 +32,8 @@ local modules = {
 ---@field checkout fun(id: string, cb: fun(err?: string))
 ---@field merge fun(id: string, opts: table, cb: fun(err?: string))
 ---@field open_browser fun(id: string|nil, cb: fun(err?: string))
+--- Reviewer candidates for the `br` picker (best effort; may be empty).
+---@field list_reviewers fun(cb: fun(err?: string, handles?: string[]))
 
 ---@param name string
 ---@return PRProvider|nil

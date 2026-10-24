@@ -36,6 +36,22 @@ local function version_of(text)
 	return tonumber(major) + tonumber(minor) / 1000
 end
 
+--- Health advice should be one readable line: the CLIs print multi-line banners
+--- that would bury the rest of the report.
+local function first_line(text, limit)
+	for line in (text or ""):gmatch("[^\n]+") do
+		line = vim.trim(line)
+		if line ~= "" then
+			limit = limit or 160
+			if #line > limit then
+				return line:sub(1, limit) .. "…"
+			end
+			return line
+		end
+	end
+	return nil
+end
+
 local function check_cli(health, name)
 	local cli = CLIS[name]
 	health.start(("%s CLI (%s)"):format(name, cli))
@@ -49,7 +65,7 @@ local function check_cli(health, name)
 
 	local version_output, code = capture({ cli, "--version" })
 	if code ~= 0 then
-		health.warn(("`%s --version` failed"):format(cli), { version_output })
+		health.warn(("`%s --version` failed"):format(cli), { first_line(version_output) or "no output" })
 	else
 		local found = version_of(version_output)
 		local minimum = MINIMUM[name]
@@ -72,7 +88,7 @@ local function check_cli(health, name)
 				table.concat({ cli, unpack(AUTH[name]) }, " ")
 			),
 			{
-				auth_output,
+				first_line(auth_output) or "no output",
 			}
 		)
 	end

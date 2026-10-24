@@ -7,6 +7,10 @@ M.defaults = {
 	-- nil = detect the provider from `git remote get-url origin`.
 	default_provider = nil,
 
+	-- nil = resolve the target branch: remote HEAD, then main, then master.
+	-- Set it to pin every `:PR create` to the same base branch.
+	default_base = nil,
+
 	ui = {
 		-- "fzf-lua" | "vim.ui". Anything that is not fzf-lua falls back to
 		-- vim.ui.select, and so does a missing/broken fzf-lua.

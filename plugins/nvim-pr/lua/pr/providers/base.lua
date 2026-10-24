@@ -35,6 +35,19 @@ function M.trim(value)
 	return (tostring(value or ""):gsub("^%s+", ""):gsub("%s+$", ""))
 end
 
+--- Branch name as the CLIs want it.
+--- The picker offers remote branches as `origin/main`, which is what the draft
+--- buffer should show, but every CLI expects the bare branch name, so the
+--- remote and `refs/heads/` prefixes are dropped right before the argv is built.
+---@param value string|nil
+---@return string|nil
+function M.plain_branch(value)
+	if type(value) ~= "string" then
+		return value
+	end
+	return (value:gsub("^refs/remotes/[^/]+/", ""):gsub("^refs/heads/", ""):gsub("^origin/", ""))
+end
+
 --- Run a command asynchronously.
 ---@param cmd string[]
 ---@param opts table|nil { cwd, env }
@@ -108,14 +121,32 @@ function M.current_branch()
 	return branch
 end
 
+local function plain_handle(handle)
+	return (M.trim(tostring(handle)):gsub("^@", ""))
+end
+
+--- Normalise reviewers into a list of plain handles (no leading `@`).
+---@param reviewers string|string[]|nil
+---@return string[]
 local function reviewer_list(reviewers)
-	if type(reviewers) == "table" then
-		return reviewers
+	local values = reviewers
+	if type(values) == "string" then
+		if M.trim(values) == "" then
+			return {}
+		end
+		values = vim.split(values, ",", { trimempty = true })
 	end
-	if type(reviewers) ~= "string" or M.trim(reviewers) == "" then
+	if type(values) ~= "table" then
 		return {}
 	end
-	return vim.split(reviewers, ",", { trimempty = true })
+	local handles = {}
+	for _, handle in ipairs(values) do
+		local plain = plain_handle(handle)
+		if plain ~= "" and not vim.tbl_contains(handles, plain) then
+			handles[#handles + 1] = plain
+		end
+	end
+	return handles
 end
 
 --- Build the provider's `create` argv (without the executable).
@@ -133,10 +164,10 @@ function M.create_args(kind, opts)
 		vim.list_extend(args, { flags.body, opts.body })
 	end
 	if opts.base and opts.base ~= "" then
-		vim.list_extend(args, { flags.base, opts.base })
+		vim.list_extend(args, { flags.base, M.plain_branch(opts.base) })
 	end
 	if opts.source and opts.source ~= "" then
-		vim.list_extend(args, { flags.source, opts.source })
+		vim.list_extend(args, { flags.source, M.plain_branch(opts.source) })
 	end
 	if opts.draft then
 		args[#args + 1] = flags.draft
@@ -277,11 +308,14 @@ function M.open_url(url, label)
 	if not url or url == "" then
 		return false
 	end
-	local ok, err = pcall(vim.ui.open, url)
-	if not ok or err == nil then
+	-- `vim.ui.open` returns the spawned `vim.system` handle when it succeeds, so
+	-- only a broken pcall counts as a failure.
+	if pcall(vim.ui.open, url) then
 		return true
 	end
-	vim.notify(("%s: %s"):format(label or "nvim-pr", err or url), vim.log.levels.INFO)
+	-- No browser handler here (headless session, no xdg-open): show the URL
+	-- instead, so it can still be copied out of the message.
+	vim.notify(("%s: %s"):format(label or "nvim-pr", url), vim.log.levels.INFO)
 	return false
 end
 

@@ -113,8 +113,14 @@
         in
         {
           default = pkgs.mkShell {
+            # The CLI login is the only thing nvim-pr needs; keeping the three
+            # providers' CLIs here lets `:PR create` be tried from `nix develop`
+            # without the nvim wrapper bundling them.
             buildInputs = [
               pkgs.luajit
+              pkgs.gh
+              pkgs.glab
+              (pkgs.azure-cli.withExtensions [ pkgs.azure-cli.extensions.azure-devops ])
             ];
           };
         }

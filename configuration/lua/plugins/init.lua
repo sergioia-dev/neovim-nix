@@ -23,6 +23,7 @@ function M.setup()
 	require("plugins.taskwarrior")
 	require("plugins.marks")
 	require("plugins.fzf")
+	require("plugins.nvim-pr")
 end
 
 M.setup()

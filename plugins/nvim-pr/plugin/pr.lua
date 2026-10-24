@@ -19,6 +19,7 @@ end, {
 vim.api.nvim_create_autocmd("DirChanged", {
 	callback = function()
 		require("pr.detect").reset()
+		require("pr.git").reset()
 	end,
 	desc = "nvim-pr: re-detect the repository after a directory change",
 })
