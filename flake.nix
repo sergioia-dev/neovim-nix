@@ -28,6 +28,7 @@
           toggable-term-nvim = final.callPackage ./derivations/toggable-term-nvim { };
           taskwarrior-nvim = final.callPackage ./derivations/taskwarrior-nvim { };
           vim-dadbod-manager = final.callPackage ./derivations/vim-dadbod-manager { };
+          nvim-pr = final.callPackage ./derivations/nvim-pr { };
         };
       };
 
@@ -112,8 +113,14 @@
         in
         {
           default = pkgs.mkShell {
+            # The CLI login is the only thing nvim-pr needs; keeping the three
+            # providers' CLIs here lets `:PR create` be tried from `nix develop`
+            # without the nvim wrapper bundling them.
             buildInputs = [
               pkgs.luajit
+              pkgs.gh
+              pkgs.glab
+              (pkgs.azure-cli.withExtensions [ pkgs.azure-cli.extensions.azure-devops ])
             ];
           };
         }

@@ -11,20 +11,26 @@
 #     "https://github.com/sergioia-dev/pi-nvim/archive/<rev>.tar.gz"
 #   nix hash convert --to sri --hash-algo sha256 <base32 hash>
 #
-# Version skew to keep in mind: `pi` loads this same checkout as a local
-# extension (see pi-nix: `extraExtensions = [ ".../neovim-nix/plugins/pi-nvim" ]`),
-# so the two halves of the bridge are the same commit. That replaced the
-# published `npm:pi-nvim@0.2.5`, which dropped the per-message options and so
-# never honoured `expandPromptTemplates`.
+# Version skew to keep in mind: the two halves of the bridge come from
+# different pins on purpose. Neovim loads this build (rev ecd6b71, v0.2.6);
+# `pi` loads the plugins/pi-nvim submodule checkout (gitlink 2451d2f), which
+# is a backward-compatible superset: it forwards prompt options and images,
+# hardens the socket bridge against stale clients, and accepts arguments on
+# `:Pi`/`:PiSend`. The wire protocol is unchanged, so either side works alone.
+# This replaced the published `npm:pi-nvim@0.2.5`, which dropped the
+# per-message options and so never honoured `expandPromptTemplates`.
+#
+# If a future nvim-side feature depends on a newer bridge, bump the `rev`
+# here and the gitlink in the superproject in the same change.
 vimUtils.buildVimPlugin {
   pname = "pi-nvim";
-  version = "v0.2.6";
+  version = "v0.2.7";
   src = fetchFromGitHub {
     owner = "sergioia-dev";
     repo = "pi-nvim";
-    rev = "ecd6b71c9a70331e58f25da9be871fb75ed35bde";
+    rev = "main";
     # sha256 = lib.fakeHash;
-    sha256 = "sha256-9TB3/ZDls16jB/ay9QW6EjjyqLnc3JEhHhEtMMi7hpo=";
+    sha256 = "sha256-7KY+TVbeF5tPgs+cdpOmvGPbx+eq0V9baj02Jr3Ja8I=";
   };
   meta.description = "Bridge between pi coding agent and Neovim";
 }

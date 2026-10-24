@@ -69,7 +69,7 @@ packs), with `html` snippets extended into `typescriptreact` and
 - Neogit for staging, committing, branching and history (`:Neogit kind=replace`)
 - gitsigns for inline diff signs, staged signs and toggleable line blame
 - fzf-lua pickers for branches and commits
-
+- nvim-pr for pull requests on GitHub, GitLab and Azure DevOps (`:PR`, see [Pull requests](#pull-requests-nvim-pr))
 ### Databases
 
 - vim-dadbod with vim-dadbod-manager's server → databases → tables tree
@@ -128,6 +128,7 @@ flake:
 | [`toggable-term-nvim`](https://github.com/sergioia-dev/toggable-term-nvim) | Focus-aware vertical, horizontal and floating terminal sidebars |
 | [`pi-nvim`](https://github.com/carderne/pi-nvim) | Bridge between the `pi` coding agent and Neovim |
 | [`vim-dadbod-manager`](https://github.com/sergioia-dev/vim-dadbod-manager-ui) | Server → databases → tables tree for dadbod-ui connections |
+| [`nvim-pr`](plugins/nvim-pr) | `:PR` creates, lists, previews, checks out, opens and merges pull requests on GitHub (`gh`), GitLab (`glab`) and Azure DevOps (`az`). Provider is detected from the `origin` remote; the CLIs are only called, never configured |
 | [`dbtui`](https://github.com/Di3go0-0/dbtui) | Standalone Rust TUI database client (PostgreSQL, MySQL, SQL Server, Oracle) with encrypted saved connections. Shipped as `.#dbtui`, not part of the Neovim package |
 | [`sql-mer-tui`](https://github.com/sergioia-dev/sql-mer-tui) | Keyboard-driven terminal ER diagram (`sqlv`), opened from the vim-dadbod-manager drawer's **Schema viewer** action. Shipped as `.#sql-mer-tui` and put on the Neovim wrapper's `PATH` |
 
@@ -135,11 +136,54 @@ flake:
 `C-t` tail log, `C-r` restart, `C-d` debugger, `C-o` cd, `C-y` yank, `C-g` jump
 to source.
 
+### Pull requests (`nvim-pr`)
+
+`:PR` talks to the pull/merge request API of whichever forge `origin` points
+at. It shells out to `gh`, `glab` or `az`, so authentication is whatever those
+CLIs already have — the plugin never stores a token and never adds one.
+
+| Command | Action |
+| --- | --- |
+| `:PR` / `:PR list` | Pick from open pull requests |
+| `:PR create` | Write the pull request in a scratch markdown buffer |
+| `:PR view [id]` | Preview one in a floating window |
+| `:PR checkout <id>` | Check the branch out locally |
+| `:PR open [id]` | Open it in the browser |
+| `:PR merge <id>` | Merge after a confirmation (`--method squash\|rebase`) |
+| `:PR provider` | Show the detected provider and CLI status |
+
+`:PR create` opens a markdown buffer with `# Target Branch: <head> -> <base>`,
+a reviewer table, `## Title` and `### Description`. Inside it, `bc` picks the
+source (head) branch on the left, `bt` the target (base) branch on the right and
+`br` multi-selects reviewers into the table, marking them Optional or Required,
+and `<Tab>` on the `**N commits · M files changed**` line expands it into the
+commits it counts, with `<Tab>` on a commit opening the files it touches;
+`<C-c><C-c>` creates the pull request (no confirmation) and `<C-c><C-k>` — or
+`:q!` — discards it. Nothing happens on `:w`: the buffer is scratch, and a draft
+without a title is rejected. Reviewer rows are plain markdown: delete a row to
+drop that person. `:checkhealth pr` reports which CLIs are installed and logged
+in.
+
+Per-provider coverage:
+
+| Action | GitHub | GitLab | Azure DevOps |
+| --- | --- | --- | --- |
+| create / list / view / open | yes | yes | yes |
+| reviewers (`br`) | collaborators via `gh api` | members via `glab api` | users via `az devops user list` |
+| checkout | `gh pr checkout` | `glab mr checkout` | fetches `refs/pull/<id>/head`, then `git switch` |
+| merge | merge, squash, rebase | merge, squash, rebase | merge and squash only |
+| draft, delete source branch | yes | yes | yes |
+
+Full details, configuration and the `<Plug>(pr-*)` mappings are in
+[`plugins/nvim-pr/README.md`](plugins/nvim-pr/README.md).
+
 ## Quick Commands
 
 | Command | Action |
 | --- | --- |
 | `:Neogit` | Git TUI |
+| `:PR` | Pick a pull request (create, view, checkout, open, merge) |
+| `:PR create` | Write a pull request in a scratch buffer |
 | `<F1>` / `:DBManagerToggle` | Database browser |
 | `<leader>fm` | File explorer (mini.files) |
 | `<leader>fn` | Network/process picker |

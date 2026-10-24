@@ -80,12 +80,6 @@ keymap({ "n", "v" }, "<C-w>p", "<cmd>Pi<CR>")
 
 -- The right sidebar is initialised with `pi` (toggable-term `vertical_init`), so
 -- one key opens the agent; `<leader>p` (from pi-nvim) sends a prompt to it.
-keymap(
-	{ "n", "t" },
-	"<leader>a",
-	require("toggable_term").toggle_right_terminal,
-	{ desc = "Toggle pi terminal", silent = true }
-)
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
@@ -103,7 +97,7 @@ keymap(
 	{ desc = "Toggle Bottom Terminal", silent = true }
 )
 
-keymap({ "n", "t" }, "<C-w>m", "<cmd>TermFloat<CR>", { desc = "Toggle Float Terminal", silent = true })
+keymap({ "n", "t" }, "<C-w>f", "<cmd>TermFloat<CR>", { desc = "Toggle Float Terminal", silent = true })
 
 keymap(
 	{ "n", "t" },
