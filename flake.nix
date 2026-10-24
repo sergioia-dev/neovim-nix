@@ -28,6 +28,7 @@
           toggable-term-nvim = final.callPackage ./derivations/toggable-term-nvim { };
           taskwarrior-nvim = final.callPackage ./derivations/taskwarrior-nvim { };
           vim-dadbod-manager = final.callPackage ./derivations/vim-dadbod-manager { };
+          nvim-pr = final.callPackage ./derivations/nvim-pr { };
         };
       };
 
