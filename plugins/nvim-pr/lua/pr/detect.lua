@@ -27,6 +27,19 @@ end
 ---   https://<org>.visualstudio.com[/DefaultCollection]/<project>/_git/<repo>
 ---@param url string|nil
 ---@return table|nil context { organization, project, repository }
+--- Percent-escapes carry the real name: Azure DevOps encodes the space in
+--- `419%20-%20DEPOSITOS%20JUDICIALES`, but `az` wants the name as it is written.
+---@param segment string|nil
+---@return string|nil
+local function unescape(segment)
+	if type(segment) ~= "string" then
+		return segment
+	end
+	return (segment:gsub("%%(%x%x)", function(hex)
+		return string.char(tonumber(hex, 16))
+	end))
+end
+
 function M.azure_context(url)
 	url = vim.trim(url or "")
 	if url == "" then
@@ -53,9 +66,9 @@ function M.azure_context(url)
 		return nil
 	end
 	return {
-		organization = organization,
-		project = project,
-		repository = (repository or ""):gsub("%.git$", ""),
+		organization = unescape(organization),
+		project = unescape(project),
+		repository = unescape((repository or ""):gsub("%.git$", "")),
 	}
 end
 

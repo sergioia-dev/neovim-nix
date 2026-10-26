@@ -109,8 +109,8 @@ Retries twice before failing.
 # --- 
 # <C-c><C-c>          create the pull request
 # <C-c><C-k>          discard it
-# bt                  pick the target branch: the one it will be merged into
-# bc                  pick the base branch: the one to be merged
+# bt                  pick the target branch (right side): where it will merge
+# bc                  pick the source branch (left side): the one to be merged
 # br                  pick reviewers for the table above
 # <Tab>               list the commits; Tab on one shows the files it touches
 ```
@@ -145,8 +145,8 @@ truncated: a branch of 200 commits lists 200 commits, and a commit that touches
 | `<C-c><C-c>` | Create the pull request (the only submit path, no confirmation) |
 | `<C-c><C-k>` | Discard the draft; `:q!` does the same |
 | `bt` | Pick the **target** branch from the `origin` remote branches, asked live from the remote, so no `git fetch` is needed first: the one it will be merged into (right side) |
-| `bc` | Pick the **base** branch from the local branches: the one to be merged (left side) |
-| `br` | Pick reviewers: multi-select of the provider's people, then mark them Optional or Required; the rows are added to the table |
+| `bc` | Pick the **source** branch from the local branches: the one to be merged (left side) |
+| `br` | Pick reviewers: multi-select of the provider's people plus a `➕ Add a handle…` entry, then mark them Optional or Required; the rows are added to the table |
 | `<Tab>` | On the `**N commits · M files changed**` line: expand the commits it counts, or fold the list away. On a commit row: show every file that commit touches, or hide them again |
 
 The `bt` list comes from `git ls-remote --heads origin`, so branches pushed by
@@ -160,7 +160,7 @@ The `bt` list is spelled the way git spells remote refs (`origin/main`,
 built, so `gh` receives `--base main` and not `--base origin/main`.
 
 Both pickers write back into the `# Target Branch:` line, which reads
-`<base> -> <target>`: the branch that wants to be merged on the left, the branch
+`<source> -> <target>`: the branch that wants to be merged on the left, the branch
 it will be merged into on the right. That whole line is what gets submitted, so
 edit it by hand if you prefer. A draft
 with no title is rejected and the buffer stays open, so nothing is lost.
@@ -194,17 +194,16 @@ that reviewer is:
 | @bob | | x |
 ```
 
-- A draft with no reviewers opens with one empty row (an `x` under `Optional`
-  and no name) so there is always somewhere to type a handle: fill it in and it
-  counts, leave it blank and nothing is submitted. `br` drops that empty row as
-  soon as it adds real people.
+- The table starts as a bare header and separator, with no rows: `br` adds them,
+  or type a row by hand (keep the pipes) and it is read like any other.
 - `br` asks the provider who the candidates are, multi-selects, then asks
   `Optional` / `Required` for the whole batch and appends the rows.
 - The rows are plain markdown: delete a row to drop that reviewer, or move the
   `x` between the two columns to flip `Optional` ↔ `Required`.
-- If the candidate list cannot be fetched (no auth, no permission, no org
-  context, API error) `br` falls back to typing handles by hand, comma
-  separated.
+- `br` is always a picker, even when the candidate list cannot be fetched (no
+  auth, no permission, no org context, API error): it then opens with the
+  `➕ Add a handle…` entry alone and a warning is shown. That entry is how a
+  handle the provider does not know is typed in (comma separated for several).
 - Candidate sources per provider: `gh api repos/{owner}/{repo}/collaborators`
   (logins), `glab api projects/:id/members/all` (usernames), and
   `az devops user list` (unique names, needs the organization context).
@@ -265,7 +264,18 @@ Differences the plugin hides for you:
 - `--base` becomes `--target-branch` on GitLab and Azure, `--body` becomes
   `--description`, and Azure takes `--organization`, `--project` and
   `--repository` parsed from a `dev.azure.com/<org>/<project>/_git/<repo>`
-  remote (falling back to `az devops configure` defaults).
+  remote (falling back to `az devops configure` defaults). Percent-escapes in
+  the remote are decoded first, because az wants the project name as it is
+  written (`419%20-%20DEPOSITOS` → `419 - DEPOSITOS JUDICIALES`). Only
+  `pr create` and `pr list` accept `--project` and `--repository` — `pr show`
+  and `pr update` take the organization alone and reject the others as
+  `unrecognized arguments`, so the plugin passes each subcommand only what it
+  accepts. If those flags make az answer `404`, the command is retried once
+  with `--detect true`, which has az work the context out from the git remote
+  itself; if that fails too, the error lists every command that was tried.
+- Azure refuses a second pull request between the same two branches
+  (`TF401179`). The plugin looks the active one up and says so, with its URL,
+  instead of echoing the error code.
 - Azure cannot rebase a pull request through the CLI; `--method rebase` fails
   with a message that says so instead of silently doing something else.
 - All CLIs are called with the flags that keep them non-interactive

@@ -29,15 +29,22 @@ local function context()
 end
 
 --- `az repos` needs either explicit context flags or --detect.
+--- Only `pr create` and `pr list` accept `--project` and `--repository`;
+--- `pr show`, `pr update` and `devops user list` take the organization alone
+--- and fail with "unrecognized arguments" when handed the whole context.
+---@param scope string|nil "organization" to leave project and repository out
 ---@return string[]
-local function context_args()
+local function context_args(scope)
 	local ctx = context()
 	if not ctx then
 		return { "--detect", "true" }
 	end
-	local args = { "--organization", ctx.organization, "--project", ctx.project }
-	if ctx.repository ~= "" then
-		vim.list_extend(args, { "--repository", ctx.repository })
+	local args = { "--organization", ctx.organization }
+	if scope ~= "organization" then
+		vim.list_extend(args, { "--project", ctx.project })
+		if ctx.repository ~= "" then
+			vim.list_extend(args, { "--repository", ctx.repository })
+		end
 	end
 	return args
 end
@@ -46,17 +53,118 @@ local function run(args, opts, cb)
 	base.run(vim.list_extend({ M.cli }, args), opts, cb)
 end
 
+--- The command as it can be pasted into a shell, for error messages.
+local function printable(args)
+	local parts = { M.cli }
+	for _, arg in ipairs(args) do
+		local needs_quote = arg:find("[%s'\"]") ~= nil
+		parts[#parts + 1] = needs_quote and ("'" .. arg .. "'") or arg
+	end
+	return table.concat(parts, " ")
+end
+
+--- Run an az command against the repository context, retrying once with
+--- `--detect` when az answers 404. A 404 means the organization, project or
+--- repository the flags named does not exist: nothing was changed, so the
+--- retry is safe even for writes, and `--detect` lets az derive the context
+--- from the git remote instead of trusting our parse of the origin URL.
+--- The error finally reported names every command that was tried.
+---@param build fun(ctx_flags: string[]): string[] build the argv of one attempt
+---@param cb fun(err: string|nil, stdout: string|nil)
+---@param scope string|nil "organization" for subcommands that reject --project/--repository
+local function with_context(build, cb, scope)
+	local tried = {}
+	local function attempt(ctx_flags, retry)
+		local args = build(ctx_flags)
+		tried[#tried + 1] = printable(args)
+		run(args, {}, function(err, stdout)
+			if err then
+				if retry and err:find("404", 1, true) then
+					attempt({ "--detect", "true" }, false)
+					return
+				end
+				-- A single attempt would only repeat the command the user just
+				-- saw, so the list is only worth printing when a retry was
+				-- involved.
+				local lines = { base.trim(err) }
+				if #tried > 1 then
+					for _, cmd in ipairs(tried) do
+						lines[#lines + 1] = "  tried: " .. cmd
+					end
+				end
+				return cb(table.concat(lines, "\n"))
+			end
+			cb(nil, stdout)
+		end)
+	end
+	local flags = context_args(scope)
+	attempt(flags, flags[1] ~= "--detect")
+end
+
+--- An active pull request between these two branches already exists, so the
+--- error can point at it instead of at az's error code.
+---@param source string
+---@param target string
+---@param cb fun(url: string|nil)
+local function active_between(source, target, cb)
+	with_context(function(ctx_flags)
+		local args = {
+			"repos",
+			"pr",
+			"list",
+			"--source-branch",
+			source,
+			"--target-branch",
+			target,
+			"--status",
+			"active",
+			"--top",
+			"1",
+		}
+		vim.list_extend(args, ctx_flags)
+		vim.list_extend(args, { "--output", "json" })
+		return args
+	end, function(err, stdout)
+		if err then
+			return cb(nil)
+		end
+		local data = base.decode(stdout)
+		if type(data) ~= "table" or not data[1] then
+			return cb(nil)
+		end
+		cb(base.normalize("azure", data[1], context()).url)
+	end)
+end
+
+
 function M.create(opts, cb)
-	local args = { "repos", "pr", "create" }
 	opts = vim.deepcopy(opts or {})
 	if not opts.source or base.trim(opts.source) == "" then
 		opts.source = base.current_branch()
 	end
-	vim.list_extend(args, base.create_args("azure", opts))
-	vim.list_extend(args, context_args())
-	vim.list_extend(args, { "--output", "json" })
-	run(args, {}, function(err, stdout)
+
+	with_context(function(ctx_flags)
+		local args = { "repos", "pr", "create" }
+		vim.list_extend(args, base.create_args("azure", opts))
+		vim.list_extend(args, ctx_flags)
+		vim.list_extend(args, { "--output", "json" })
+		return args
+	end, function(err, stdout)
 		if err then
+			-- az refuses a second pull request between the same two branches
+			-- (TF401179). That is not a failure worth a stack of flags: the
+			-- existing request is what the user wants, so report it.
+			if err:find("TF401179", 1, true) or err:lower():find("already exists", 1, true) then
+				-- The target branch travels as `base` in the shared options.
+				local target = opts.base or ""
+				if target == "" then
+					return cb(("an active pull request from %s already exists"):format(opts.source))
+				end
+				local where = ("%s -> %s"):format(opts.source, target)
+				return active_between(opts.source, target, function(url)
+					cb(("an active pull request for %s already exists%s"):format(where, url and (": " .. url) or ""))
+				end)
+			end
 			return cb(err)
 		end
 		local data, decode_err = base.decode(stdout)
@@ -76,13 +184,15 @@ function M.list(opts, cb)
 		merged = "completed",
 		open = "active",
 	})[opts.state or "open"] or "active"
-	local args = { "repos", "pr", "list", "--status", status, "--top", tostring(opts.limit or 50) }
-	if opts.author and base.trim(opts.author) ~= "" then
-		vim.list_extend(args, { "--creator", opts.author })
-	end
-	vim.list_extend(args, context_args())
-	vim.list_extend(args, { "--output", "json" })
-	run(args, {}, function(err, stdout)
+	with_context(function(ctx_flags)
+		local args = { "repos", "pr", "list", "--status", status, "--top", tostring(opts.limit or 50) }
+		if opts.author and base.trim(opts.author) ~= "" then
+			vim.list_extend(args, { "--creator", opts.author })
+		end
+		vim.list_extend(args, ctx_flags)
+		vim.list_extend(args, { "--output", "json" })
+		return args
+	end, function(err, stdout)
 		if err then
 			return cb(err)
 		end
@@ -100,10 +210,12 @@ function M.list(opts, cb)
 end
 
 function M.view(id, cb)
-	local args = { "repos", "pr", "show", "--id", tostring(id) }
-	vim.list_extend(args, context_args())
-	vim.list_extend(args, { "--output", "json" })
-	run(args, {}, function(err, stdout)
+	with_context(function(ctx_flags)
+		local args = { "repos", "pr", "show", "--id", tostring(id) }
+		vim.list_extend(args, ctx_flags)
+		vim.list_extend(args, { "--output", "json" })
+		return args
+	end, function(err, stdout)
 		if err then
 			return cb(err)
 		end
@@ -112,7 +224,7 @@ function M.view(id, cb)
 			return cb(decode_err)
 		end
 		cb(nil, base.normalize("azure", data, context()))
-	end)
+	end, "organization")
 end
 
 --- Azure has no `pr checkout`; the PR head lives at refs/pull/<id>/head.
@@ -151,16 +263,18 @@ function M.merge(id, opts, cb)
 	if not merge_args then
 		return cb(err)
 	end
-	local args = { "repos", "pr", "update", "--id", tostring(id) }
-	vim.list_extend(args, merge_args)
-	if opts.delete_branch then
-		vim.list_extend(args, { "--delete-source-branch", "true" })
-	end
-	vim.list_extend(args, context_args())
-	vim.list_extend(args, { "--output", "json" })
-	run(args, {}, function(run_err)
+	with_context(function(ctx_flags)
+		local args = { "repos", "pr", "update", "--id", tostring(id) }
+		vim.list_extend(args, merge_args)
+		if opts.delete_branch then
+			vim.list_extend(args, { "--delete-source-branch", "true" })
+		end
+		vim.list_extend(args, ctx_flags)
+		vim.list_extend(args, { "--output", "json" })
+		return args
+	end, function(run_err)
 		cb(run_err)
-	end)
+	end, "organization")
 end
 
 --- Turn the API URL Azure returns into the browsable one.
@@ -170,7 +284,12 @@ end
 local function web_url(url, id)
 	local ctx = context()
 	if ctx and ctx.repository ~= "" then
-		return ("%s/%s/_git/%s/pullrequest/%s"):format(ctx.organization, ctx.project, ctx.repository, tostring(id))
+		return ("%s/%s/_git/%s/pullrequest/%s"):format(
+			ctx.organization,
+			base.url_segment(ctx.project),
+			base.url_segment(ctx.repository),
+			tostring(id)
+		)
 	end
 	if url then
 		return (url:gsub("_apis/git/repositories/([^/]+)/pullRequests/", "_git/%1/pullrequest/"))
@@ -215,7 +334,13 @@ function M.list_reviewers(cb)
 		"--output",
 		"json",
 	}
-	vim.list_extend(args, context_args())
+	-- `az devops user list` takes only `--organization`: the `--project` and
+	-- `--repository` flags that `context_args()` adds are rejected, so the
+	-- context is narrowed to the organization here.
+	local ctx = context()
+	if ctx then
+		vim.list_extend(args, { "--organization", ctx.organization })
+	end
 	run(args, {}, function(err, stdout)
 		if err then
 			return cb(err)

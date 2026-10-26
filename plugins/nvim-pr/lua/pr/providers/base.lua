@@ -254,6 +254,16 @@ normalizers.gitlab = function(item)
 	}
 end
 
+--- One path segment of a web URL. Project names reach the CLI decoded
+--- (`419 - DEPOSITOS JUDICIALES`), so a browsable URL has to encode them again.
+---@param segment string|nil
+---@return string
+function M.url_segment(segment)
+	return (tostring(segment or ""):gsub("[^%w%-%._~]", function(char)
+		return ("%%%02X"):format(char:byte())
+	end))
+end
+
 normalizers.azure = function(item, ctx)
 	local id = tostring(item.pullRequestId or "")
 	local url = item.url
@@ -261,13 +271,18 @@ normalizers.azure = function(item, ctx)
 		local organization = ctx.organization:gsub("/+$", "")
 		if organization:match("visualstudio%.com") then
 			organization = organization:gsub("^https?://", ""):gsub("/+$", "")
-			url = ("https://%s/%s/_git/%s/pullrequest/%s"):format(organization, ctx.project, ctx.repository or "", id)
+			url = ("https://%s/%s/_git/%s/pullrequest/%s"):format(
+				organization,
+				M.url_segment(ctx.project),
+				M.url_segment(ctx.repository or ""),
+				id
+			)
 		else
 			local org = organization:gsub("^https?://dev%.azure%.com/?", "")
 			url = ("https://dev.azure.com/%s/%s/_git/%s/pullrequest/%s"):format(
 				org,
-				ctx.project,
-				ctx.repository or "",
+				M.url_segment(ctx.project),
+				M.url_segment(ctx.repository or ""),
 				id
 			)
 		end

@@ -10,8 +10,8 @@ local footer = {
 	FOOTER_MARKER,
 	"# <C-c><C-c>          create the pull request",
 	"# <C-c><C-k>          discard it",
-	"# bt                  pick the target branch: the one it will be merged into",
-	"# bc                  pick the base branch: the one to be merged",
+	"# bt                  pick the target branch (right side): where it will merge",
+	"# bc                  pick the source branch (left side): the one to be merged",
 	"# br                  pick reviewers for the table above",
 	"# <Tab>               list the commits; Tab on one shows the files it touches",
 	"#                     delete a reviewer by deleting its row",
@@ -324,8 +324,8 @@ local function reviewer_handles(value)
 	return handles
 end
 
---- Whether `line` is a table row with no name in it: the empty row the draft
---- opens with, waiting for someone to be typed in.
+--- Whether `line` is a table row with no name in it: a row someone added by
+--- hand and left blank, which is dropped rather than submitted.
 ---@param line string
 ---@return boolean
 local function blank_reviewer_row(line)
@@ -367,12 +367,6 @@ local function template(opts)
 		REVIEWER_SEPARATOR,
 	}
 	local handles = reviewer_handles(opts.reviewers)
-	if #handles == 0 then
-		-- An empty row to type into: the table is never an empty header with no
-		-- place to put a name. A blank handle is ignored when the draft is read
-		-- back, so leaving it alone submits no reviewers at all.
-		lines[#lines + 1] = reviewer_row("", "optional")
-	end
 	for _, handle in ipairs(handles) do
 		lines[#lines + 1] = reviewer_row(handle, "optional")
 	end
@@ -515,7 +509,7 @@ local function pick_string(entries, opts, on_select)
 	end)
 end
 
---- Pick a branch: remote-tracking ones for the base, local ones for the head.
+--- Pick a branch: remote-tracking ones for the target, local ones for the source.
 ---@param kind "base"|"head"
 ---@param current string|nil
 ---@param on_select fun(branch: string)
@@ -523,7 +517,8 @@ function M.pick_branch(kind, current, on_select)
 	local git = require("pr.git")
 	local is_base = kind == "base"
 	pick_string(is_base and git.remote_branches() or git.local_branches(), {
-		prompt = is_base and "Target branch: where it will be merged> " or "Base branch: the one to be merged> ",
+		prompt = is_base and "Target branch (right side): where it will be merged> "
+			or "Source branch (left side): the one to be merged> ",
 		current = current,
 		empty = is_base and "no branches found on the `origin` remote" or "no local branches found",
 	}, on_select)
@@ -698,7 +693,11 @@ local function add_reviewers(buf, handles, kind)
 	vim.api.nvim_buf_set_lines(buf, index + 1, last, false, rows)
 end
 
---- Ask for free-text handles when the provider cannot list people.
+--- Always present in the reviewer picker: add a handle the provider did not list.
+local ADD_REVIEWER_ENTRY = "➕ Add a handle…"
+
+--- Type handles the provider does not know: the only prompt the reviewer
+--- picker's add-a-handle entry opens, never a fallback of its own.
 ---@param cb fun(handles: string[])
 local function input_reviewers(cb)
 	vim.ui.input({ prompt = "Reviewer handle(s), comma separated> " }, function(input)
@@ -710,11 +709,14 @@ local function input_reviewers(cb)
 	end)
 end
 
---- `br`: pick reviewer candidates from the provider, then mark them optional/required.
+--- `br`: always a picker. Candidates come from the provider; when it cannot
+--- list people the picker still opens (with the add-a-handle entry alone), so
+--- the key never degrades into a bare prompt.
 ---@param buf integer
 ---@param opts table { provider }
 local function pick_reviewers(buf, opts)
 	local provider = opts.provider
+
 	local function mark(handles)
 		if not handles or #handles == 0 then
 			return
@@ -724,23 +726,56 @@ local function pick_reviewers(buf, opts)
 		end)
 	end
 
-	local function from_provider()
-		if not provider or type(provider.list_reviewers) ~= "function" then
-			input_reviewers(mark)
-			return
-		end
-		provider.list_reviewers(function(err, handles)
-			vim.schedule(function()
-				if err or not handles or #handles == 0 then
-					-- No members available (no auth, no permission): type them instead.
-					input_reviewers(mark)
-					return
+	--- Multi-select the candidates plus the manual entry, then mark the picked people.
+	---@param entries string[]
+	local function pick(entries)
+		local menu = {}
+		vim.list_extend(menu, entries or {})
+		menu[#menu + 1] = ADD_REVIEWER_ENTRY
+		pick_many(menu, { prompt = "Reviewers> " }, function(selected)
+			local handles, wants_manual = {}, false
+			for _, entry in ipairs(selected or {}) do
+				if entry == ADD_REVIEWER_ENTRY then
+					wants_manual = true
+				elseif entry ~= "" then
+					handles[#handles + 1] = entry
 				end
-				pick_many(handles, { prompt = "Reviewers> " }, mark)
+			end
+			if not wants_manual then
+				mark(handles)
+				return
+			end
+			-- The picker's own entry collects a handle the provider does not know.
+			input_reviewers(function(typed)
+				for _, handle in ipairs(typed) do
+					if not vim.tbl_contains(handles, handle) then
+						handles[#handles + 1] = handle
+					end
+				end
+				mark(handles)
 			end)
 		end)
 	end
-	from_provider()
+
+	if not provider or type(provider.list_reviewers) ~= "function" then
+		pick({})
+		return
+	end
+	provider.list_reviewers(function(err, handles)
+		vim.schedule(function()
+			if err or not handles or #handles == 0 then
+				-- No candidates (not authenticated, no permission): the picker still
+				-- opens, so a handle can be added through its entry.
+				vim.notify(
+					"nvim-pr: could not list reviewers" .. (err and (": " .. err) or ""),
+					vim.log.levels.WARN
+				)
+				pick({})
+				return
+			end
+			pick(handles)
+		end)
+	end)
 end
 
 --- Open the Markdown draft. The PR is created only by `<C-c><C-c>`; `<C-c><C-k>`
@@ -803,14 +838,14 @@ function M.create(opts, on_submit)
 			set_target(buf, "base", branch)
 			refresh_stat(buf)
 		end)
-	end, { buffer = buf, nowait = true, desc = "nvim-pr: pick the target branch (where it will be merged)" })
+	end, { buffer = buf, nowait = true, desc = "nvim-pr: pick the target branch (right side: where it will merge)" })
 	vim.keymap.set("n", "bc", function()
 		local parsed = M.parse(vim.api.nvim_buf_get_lines(buf, 0, -1, false))
 		M.pick_branch("head", parsed.head or opts.head, function(branch)
 			set_target(buf, "head", branch)
 			refresh_stat(buf)
 		end)
-	end, { buffer = buf, nowait = true, desc = "nvim-pr: pick the base branch (the one to be merged)" })
+	end, { buffer = buf, nowait = true, desc = "nvim-pr: pick the source branch (left side: the one merged)" })
 	vim.keymap.set("n", "br", function()
 		pick_reviewers(buf, opts)
 	end, { buffer = buf, nowait = true, desc = "nvim-pr: pick reviewers for the table" })
