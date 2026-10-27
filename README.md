@@ -144,34 +144,29 @@ CLIs already have — the plugin never stores a token and never adds one.
 
 | Command | Action |
 | --- | --- |
-| `:PR` / `:PR list` | Pick from open pull requests |
+| `:PR` | Pick a pull request; yours sort first, tagged `· yours` |
 | `:PR create` | Write the pull request in a scratch markdown buffer |
-| `:PR view [id]` | Preview one in a floating window |
-| `:PR checkout <id>` | Check the branch out locally |
-| `:PR open [id]` | Open it in the browser |
-| `:PR merge <id>` | Merge after a confirmation (`--method squash\|rebase`) |
-| `:PR provider` | Show the detected provider and CLI status |
+| `:PR view [id]` | Read-only split: the pull request on top, its conversation below |
+| `:checkhealth pr` | Detected provider, repository root and CLI status |
 
-`:PR create` opens a markdown buffer with `# Target Branch: <head> -> <base>`,
-a reviewer table, `## Title` and `### Description`. Inside it, `bc` picks the
-source (head) branch on the left, `bt` the target (base) branch on the right and
-`br` multi-selects reviewers into the table, marking them Optional or Required,
-and `<Tab>` on the `**N commits · M files changed**` line expands it into the
-commits it counts, with `<Tab>` on a commit opening the files it touches;
-`<C-c><C-c>` creates the pull request (no confirmation) and `<C-c><C-k>` — or
-`:q!` — discards it. Nothing happens on `:w`: the buffer is scratch, and a draft
-without a title is rejected. Reviewer rows are plain markdown: delete a row to
-drop that person. `:checkhealth pr` reports which CLIs are installed and logged
-in.
+`:PR create` opens a buffer of labelled rows: `Source:`/`Target:` branches,
+`Reviewers:`, and `Title:`/`Description:`. Inside it, `t` picks the target
+(base) branch from the remote branches, `s` the source (head) branch from the
+local ones, and `rr`/`ro` multi-select a required or optional reviewer; the
+remote branch list and the provider's people are fetched in the background while
+you type, so the menus open without a wait. `<Tab>` on the
+`N commits · M files changed` line expands it into the commits it counts, with
+`<Tab>` on a commit opening the files it touches; `<C-c><C-c>` creates the pull
+request (no confirmation) and `<C-c><C-k>` — or `:q!` — discards it. Nothing
+happens on `:w`: the buffer is scratch, and a draft without a title is rejected.
+`:checkhealth pr` reports which CLIs are installed and logged in.
 
 Per-provider coverage:
 
 | Action | GitHub | GitLab | Azure DevOps |
 | --- | --- | --- | --- |
-| create / list / view / open | yes | yes | yes |
-| reviewers (`br`) | collaborators via `gh api` | members via `glab api` | users via `az devops user list` |
-| checkout | `gh pr checkout` | `glab mr checkout` | fetches `refs/pull/<id>/head`, then `git switch` |
-| merge | merge, squash, rebase | merge, squash, rebase | merge and squash only |
+| create / list / view / open (`gx` in the view) | yes | yes | yes |
+| reviewers (`rr`/`ro`) | collaborators via `gh api` | members via `glab api` | users via `az devops user list` |
 | draft, delete source branch | yes | yes | yes |
 
 Full details, configuration and the `<Plug>(pr-*)` mappings are in

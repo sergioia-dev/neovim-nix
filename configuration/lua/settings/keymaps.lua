@@ -68,18 +68,12 @@ keymap(
 	{ desc = "Toggle Line blames", silent = true }
 )
 keymap("n", "<leader>gg", "<cmd>:Neogit kind=replace<CR>", { desc = "Toggle Neogit Interface", silent = true })
-keymap("n", "<leader>gb", function()
-	require("fzf-lua").git_branches()
-end, { desc = "Open a view with the git branches", silent = true })
-keymap("n", "<leader>gc", function()
-	require("fzf-lua").git_commits()
-end, { desc = "Open a view with the git commits", silent = true })
---
+
+keymap("n", "<leader>gpc", "<cmd>:PR create<CR>", { desc = "Opens the PR create Interface", silent = true })
+keymap("n", "<leader>gpv", "<cmd>:PR view<CR>", { desc = "Opens the PR view list", silent = true })
+
 -- -- Pi agent
 keymap({ "n", "v" }, "<C-w>p", "<cmd>Pi<CR>")
-
--- The right sidebar is initialised with `pi` (toggable-term `vertical_init`), so
--- one key opens the agent; `<leader>p` (from pi-nvim) sends a prompt to it.
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 

@@ -1,5 +1,6 @@
 {
   lib,
+  fetchFromGitLab,
   vimUtils,
 }:
 
@@ -11,7 +12,13 @@
 vimUtils.buildVimPlugin {
   pname = "nvim-pr";
   version = "0.1.0";
-  src = lib.cleanSource ../../plugins/nvim-pr;
+  src = fetchFromGitLab {
+    owner = "sergioia-dev";
+    repo = "PR-nvim";
+    rev = "main";
+    # sha256 = lib.fakeHash;
+    sha256 = "sha256-fWxrpOfAaP1qEqShiNbTiw4HoYRKKMYwI5FrsPRF3NQ=";
+  };
   meta.description = "Create, list, view, check out and merge pull requests from Neovim";
   doCheck = false;
 }

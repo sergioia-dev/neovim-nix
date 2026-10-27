@@ -58,7 +58,7 @@ let
     vimPlugins.toggable-term-nvim
     vimPlugins.taskwarrior-nvim
     vimPlugins.vim-fugitive
-    vimPlugins.nvim-pr
+    vimPlugins.PR-nvim
     configuration
   ];
 

@@ -19,3 +19,6 @@
 [submodule "plugins/pi-nvim"]
 	path = plugins/pi-nvim
 	url = git@github.com:sergioia-dev/pi-nvim.git
+[submodule "plugins/PR-nvim"]
+	path = plugins/PR-nvim
+	url = git@gitlab.com:sergioia-dev/pr-nvim.git
