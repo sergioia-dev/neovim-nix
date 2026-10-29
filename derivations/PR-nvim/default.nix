@@ -18,7 +18,7 @@ vimUtils.buildVimPlugin {
     # identity row ordered id, author, state, verdict, read from every provider
     # (github, gitlab, azure), on branch feat/pr-complete; move to "main" once
     # that merge request is in.
-    rev = "6938eadb09854c62f1d7839ee539571f4f35d3eb";
+    rev = "main";
     sha256 = "sha256-EnZqQNbbjdlJ0bVkWpzCjMnfOHYLnzbLZC5BHmbZOqI=";
   };
   meta.description = "Create, list, view, check out and merge pull requests from Neovim";
