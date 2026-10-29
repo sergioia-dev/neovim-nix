@@ -14,11 +14,12 @@ vimUtils.buildVimPlugin {
   src = fetchFromGitLab {
     owner = "sergioia-dev";
     repo = "PR-nvim";
-    # a735343 = ":PR complete" on branch feat/pr-complete; move to "main" once
-    # that merge request is in.
-    rev = "a735343b980a81abb28e6979d65b870f269d5396";
+    # f174c9a = ":PR complete" plus a finished PR's commits, files and
+    # approvals, on branch feat/pr-complete; move to "main" once that merge
+    # request is in.
+    rev = "f174c9a612ce61cd94e6e637d86e4d317ed3bf51";
     # sha256 = lib.fakeHash;
-    sha256 = "sha256-xqSiReeaoPVhxf1x8ereTG5Ac0K0JGG7rnHOK6oCQpc=";
+    sha256 = "sha256-Y3r7sNNDFSWa2ZLrzKb81SCkGphPlzYxpGmWCddHzJQ=";
   };
   meta.description = "Create, list, view, check out and merge pull requests from Neovim";
   doCheck = false;
