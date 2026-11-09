@@ -21,22 +21,22 @@
 # Bump `version` and both hashes together, after a `nix build --no-link` run:
 #   nix build --no-link .#sql-mer-tui   # reports the real src/cargo hashes
 rustPlatform.buildRustPackage (finalAttrs: {
-  pname = "sql-mer-tui";
+  pname = "sqlview";
   version = "0.1.0";
 
   src = fetchFromGitHub {
     owner = "sergioia-dev";
-    repo = "sql-mer-tui";
+    repo = "sqlview";
     # Pinned to the commit that makes SQL Server `?query` options (encrypt,
     # trustServerCertificate) reach tiberius; it stays reachable from `main`
     # once the fix/mssql-url-query-params branch is merged.
     rev = "main";
-    hash = "sha256-dHbv6e9kmYBpv5wK8o7ZT2w4dit4qzvPEjwa3x43PRk=";
+    hash = "sha256-Cnue1df5bkKmvT0EWJ0tWzhbKZaMNTFek1O145V95kU=";
   };
 
   # Cargo.lock is committed upstream, so the classic cargoHash path uses it
   # directly; no lock file has to be vendored into this directory.
-  cargoHash = "sha256-F7pBevGVYmZ5hpfdtpJKSbn/c9qr/J+D5tGZwKNHZE0=";
+  cargoHash = "sha256-n50FG9lLxFkyIu/agE0zQ1ifOAig34LDX0H4/kMhCoM=";
 
   nativeBuildInputs = [ pkg-config ];
 

@@ -19,7 +19,7 @@
 
         # Optional companion for the vim-dadbod-manager drawer: the
         # `sqlv` ER-diagram TUI, opened from the "Schema viewer" entry.
-        sqlv = final.callPackage ./derivations/sql-mer-tui { };
+        sqlview = final.callPackage ./derivations/sqlview { };
 
         vimPlugins = prev.vimPlugins // {
           pi-nvim = final.callPackage ./derivations/pi-nvim { };
@@ -47,6 +47,10 @@
         let
           pkgs = nixpkgs.legacyPackages.${system}.extend pluginDerivationsOverlay;
           pkgs-unstable = nixpkgs-unstable.legacyPackages.${system}.extend pluginDerivationsOverlay;
+
+          azure-cli-with-devops = pkgs.azure-cli.withExtensions [
+            pkgs.azure-cli.extensions.azure-devops
+          ];
         in
         let
           LSPs = with pkgs; [
@@ -77,8 +81,11 @@
             luaPackages.tree-sitter-cli
             luaPackages.jsregexp
             fzf
-            sqlv # sqlv, the "Schema viewer" backend in the vim-dadbod-manager drawer
+            sqlview # sqlv, the "Schema viewer" backend in the vim-dadbod-manager drawer
             taskwarrior3
+            gh
+            glab
+            azure-cli-with-devops
           ];
 
         in

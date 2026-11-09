@@ -15,11 +15,10 @@ vimUtils.buildVimPlugin {
     owner = "sergioia-dev";
     repo = "PR-nvim";
     # f5d0f78 = ":PR complete" with each commit's files on Tab and the
-    # identity row ordered id, author, state, verdict, read from every provider
     # (github, gitlab, azure), on branch feat/pr-complete; move to "main" once
     # that merge request is in.
-    rev = "main";
-    sha256 = "sha256-EnZqQNbbjdlJ0bVkWpzCjMnfOHYLnzbLZC5BHmbZOqI=";
+    rev = "feat/work-items";
+    sha256 = "sha256-vl2u7zyNlB5+x8U0fzutJbuo3SMghIr6edOUy3VKlS8=";
   };
   meta.description = "Create, list, view, check out and merge pull requests from Neovim";
   doCheck = false;

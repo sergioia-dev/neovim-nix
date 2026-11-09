@@ -28,9 +28,8 @@ vimUtils.buildVimPlugin {
   src = fetchFromGitHub {
     owner = "sergioia-dev";
     repo = "pi-nvim";
-    rev = "main";
-    # sha256 = lib.fakeHash;
-    sha256 = "sha256-7KY+TVbeF5tPgs+cdpOmvGPbx+eq0V9baj02Jr3Ja8I=";
+    rev = "feat/transport-notifications";
+    sha256 = "sha256-3FFj0uXBO2E6FoPLubDWsITIR3g/0+cN/ukAlfsOUns=";
   };
   meta.description = "Bridge between pi coding agent and Neovim";
 }

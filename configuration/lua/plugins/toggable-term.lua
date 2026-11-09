@@ -23,7 +23,7 @@ require("toggable_term").setup({
 	-- horizontal_size = 30, -- 30 lines tall
 	-- float_width = 90, -- 50 columns wide
 	-- float_height = 50, -- 50 lines tall
-	vertical_close_on_focus_loss = true,
+	vertical_close_on_focus_loss = false,
 	horizontal_close_on_focus_loss = true,
 	float_close_on_focus_loss = true,
 
