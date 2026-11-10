@@ -44,7 +44,6 @@ let
     vimPlugins.noice-nvim
     vimPlugins.smear-cursor-nvim
     vimPlugins.kulala-nvim
-    vimPlugins.flutter-tools-nvim
     vimPlugins.nix-develop-nvim
     vimPlugins.pi-nvim
     vimPlugins.marks-nvim

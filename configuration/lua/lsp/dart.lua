@@ -1,1 +1,1 @@
-require("flutter-tools").setup({}) -- use defaults
+vim.lsp.enable("dartls")
