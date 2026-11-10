@@ -73,7 +73,10 @@ keymap("n", "<leader>gpc", "<cmd>:PR create<CR>", { desc = "Opens the PR create 
 keymap("n", "<leader>gpv", "<cmd>:PR view<CR>", { desc = "Opens the PR view list", silent = true })
 
 -- -- Pi agent
-keymap({ "n", "v" }, "<C-w>p", "<cmd>Pi<CR>")
+keymap("n", "<C-w>p", "<cmd>Pi<CR>", { desc = "Open Pi send dialog", silent = true })
+-- Visual mode must use ":" (not <cmd>): only ":" prepends the visual range, which is
+-- what makes :Pi capture the selection instead of falling back to the whole buffer.
+keymap("v", "<C-w>p", ":Pi<CR>", { desc = "Send selection to Pi", silent = true })
 
 keymap({ "n", "v" }, "<F1>", require("plugins.sidebars").toggle_dadbod, { desc = "Toggle DadBod UI", silent = true })
 
